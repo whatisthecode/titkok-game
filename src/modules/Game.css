@@ -1,0 +1,91 @@
+body {
+  background: #000;
+}
+
+@keyframes showPath {
+  0% {
+    transform: scaleX(1);
+    transform-origin: center;
+  }
+
+  99% {
+    transform: scaleX(0);
+    transform-origin: center;
+  }
+
+  100% {
+    transform: scaleX(0);
+    display: none;
+  }
+}
+
+@keyframes fly {
+  0% {
+    transform: translateY(0);
+    transform-origin: center;
+  }
+
+  50% {
+    transform: translateY(5%);
+    transform-origin: center;
+  }
+
+  100% {
+    transform: translateY(0);
+    transform-origin: center;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+    transform-origin: center;
+  }
+
+  50% {
+    transform: rotate(360deg);
+    transform-origin: center;
+  }
+
+  100% {
+    transform: rotate(0);
+    transform-origin: center;
+  }
+}
+
+#path {
+  @apply min-h-full w-full self-end;
+  background: url('/assets/tiktok-game/path.desk.png');
+  background-position: bottom;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+}
+
+#mask {
+  @apply absolute w-full h-full bg-black top-0 left-0 z-20;
+  animation-name: showPath;
+  animation-duration: 4s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.stuff {
+  @apply h-auto absolute z-[11];
+  animation-name: fly;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.firework {
+  @apply h-auto absolute z-[11];
+}
+
+body {
+  background: red;
+}
+
+#form-gift {
+  @apply w-full min-h-dvh flex justify-center items-center absolute top-0 left-0 z-20;
+  background: rgba(0, 0, 0, 0.8);
+}

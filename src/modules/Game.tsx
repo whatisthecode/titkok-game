@@ -3,9 +3,9 @@ import useImage from 'use-image';
 
 import './Game.css';
 import { useContext, useEffect, useReducer, useRef, useState } from 'react';
-import { GameConfig, GameData, Layout, StuffConfig } from './types/type';
-import { GameContext, GameDispatchContext } from './contexts';
-import { GameReducer } from './services/reducer';
+import { GameConfig, GameData, Layout, StuffConfig } from '../types/type';
+import { GameContext, GameDispatchContext } from '../contexts';
+import { GameReducer } from '../services/reducer';
 
 const STUFFS = [
   [1225, 1362],

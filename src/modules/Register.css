@@ -1,0 +1,7 @@
+#form-register {
+  @apply w-full min-h-dvh flex justify-center items-center;
+  background: url('/background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}

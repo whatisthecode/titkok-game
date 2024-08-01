@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import './index.css';
 import { UserContext } from './contexts';
-import RegisterForm from './Register';
-import Game from './Game';
+import RegisterForm from './modules/Register';
+import Game from './modules/Game';
 import { IUser } from './types/type';
 
 const App = () => {
