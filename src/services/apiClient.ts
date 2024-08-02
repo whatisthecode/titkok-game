@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IUser } from '../types/type';
+import { RegisterUserRequest, UpdateUserRequest } from '../types/type';
 import { API_ENDPOINT } from '../configs';
 
 const apiClient = axios.create({
@@ -10,7 +10,7 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
-const registerUser = async (user: IUser) => {
+const registerUser = async (user: RegisterUserRequest) => {
   try {
     const response = await apiClient.post('/user/register', user);
     return response.data;
@@ -20,7 +20,7 @@ const registerUser = async (user: IUser) => {
   }
 };
 
-const updateUser = async (user: IUser) => {
+const updateUser = async (user: UpdateUserRequest) => {
   try {
     const response = await apiClient.put('/user', user);
     return response.data;

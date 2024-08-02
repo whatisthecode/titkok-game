@@ -1,10 +1,13 @@
 export interface IUser {
-  firstName: string;
+  firstName?: string;
   lastName: string;
+  fullName: string;
   email: string;
   company: string;
   isRewarded?: boolean;
-  rewardedAt?: string;
+  phone?: string;
+  address?: string;
+  title?: string;
 }
 
 export interface UserContextProps {
@@ -55,3 +58,12 @@ export interface GameData extends GameConfig {
 }
 
 export type Layout = 'mobile' | 'desktop';
+
+export type Step = 'register' | 'game' | 'result' | 'letter';
+
+export type RegisterUserRequest = Pick<IUser, 'firstName' | 'lastName' | 'email' | 'company'>;
+
+export type UpdateUserRequest = Pick<
+  IUser,
+  'fullName' | 'phone' | 'address' | 'email' | 'company' | 'title' | 'isRewarded'
+>;

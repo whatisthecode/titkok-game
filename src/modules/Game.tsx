@@ -3,9 +3,13 @@ import useImage from 'use-image';
 
 import './Game.css';
 import { useContext, useEffect, useReducer, useRef, useState } from 'react';
-import { GameConfig, GameData, Layout, StuffConfig } from '../types/type';
+import { GameConfig, GameData, Layout, Step, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
+
+type Props = {
+  setStep: (step: Step) => void;
+};
 
 const STUFFS = [
   [1225, 1362],
@@ -808,7 +812,7 @@ function StickResult({ onBack }: { onBack: () => void }) {
       {displayText ? (
         <>
           <Text
-            text={'Que xam so 1:'}
+            text={'Quẻ xăm số 1:'}
             fill={'#fff'}
             width={window.innerWidth}
             align="center"
@@ -817,9 +821,9 @@ function StickResult({ onBack }: { onBack: () => void }) {
             fontFamily="TikTokDisplayFont"
           />
           <Text
-            text={'Hut'}
+            text={'Hút'}
             fill={'#fff'}
-            x={-(measureText('Hut tinh yeu') / 2) + measureText('Hut') / 2}
+            x={-(measureText('Hút tình yêu') / 2) + measureText('Hút') / 2}
             width={window.innerWidth}
             align="center"
             y={window.innerHeight / 2 + yLines[1]}
@@ -828,10 +832,10 @@ function StickResult({ onBack }: { onBack: () => void }) {
             fontStyle="bold"
           />
           <Text
-            text={'tinh yeu'}
+            text={'tình yêu'}
             fill={'#fd0048'}
             x={
-              -(measureText('Hut tinh yeu') / 2) + measureText('tinh yeu') / 2 + measureText('Hut ')
+              -(measureText('Hút tình yêu') / 2) + measureText('tình yêu') / 2 + measureText('Hút ')
             }
             width={window.innerWidth}
             align="center"
@@ -841,7 +845,7 @@ function StickResult({ onBack }: { onBack: () => void }) {
             fontStyle="bold"
           />
           <Text
-            text={'Tiktok theu det mong mo'}
+            text={'Tiktok thêu dệt mộng mơ'}
             fill={'#fff'}
             width={window.innerWidth}
             align="center"
@@ -850,7 +854,7 @@ function StickResult({ onBack }: { onBack: () => void }) {
             fontFamily="TikTokDisplayFont"
           />
           <Text
-            text={'Yeu thuong sau dam, chang mo phai nhanh'}
+            text={'Yêu thương sâu đậm, chẳng mờ'}
             fill={'#fff'}
             width={window.innerWidth}
             align="center"
@@ -1020,7 +1024,7 @@ function NameLogo() {
   );
 }
 
-function Game() {
+function Game({ setStep }: Props) {
   const [gameData, dispatch] = useReducer(GameReducer, {
     ...getGameConfig(),
     layout: window.innerWidth < window.innerHeight ? 'mobile' : 'desktop',
