@@ -89,9 +89,9 @@ body {
     background-position: center;
 }
 
-body {
+/* body {
     background: red;
-}
+} */
 
 #form-gift {
     @apply w-full min-h-dvh flex justify-center items-center absolute top-0 left-0 z-20;

@@ -6,6 +6,26 @@ import { createContext, useContext, useEffect, useReducer, useRef, useState } fr
 
 type Layout = "mobile"| "desktop";
 
+function random(min: number, max: number){
+  return Math.floor(Math.random() * max) + min;
+}
+
+function getPlayTimes() {
+  return Math.floor(random(1, 2));
+}
+
+function getWishingResult() {
+  return random(0, 8);
+}
+
+function generateDefaultResult(playCount: number) {
+  const result = [];
+  for(let i = 0; i < playCount; i++) {
+    result[i] = -1;
+  }
+  return result;
+}
+
 const STUFFS = [
   [1225, 1362],
   [1497, 1621],
@@ -24,6 +44,9 @@ const RULE_BANNERS = [2348, 1175];
 const BUTTON = [327, 80];
 const CUP = [911, 1096];
 const CUP_LOWER = [911, 282];
+
+const BOX_LOWER = [2148, 1030];
+const BOX_UPPER = [2154, 1288];
 
 
 const FLOWERS = [
@@ -59,6 +82,7 @@ interface GameConfig {
   resultStickWidth: number;
   buttonHeight: number;
   phoneWidth: number;
+  giftBoxWidth: number;
   pathY: number;
 }
 
@@ -72,7 +96,10 @@ interface GameData extends GameConfig {
     dpr: number;
     bWidth: number;
     bHeight: number;
-  }
+  },
+  current: number;
+  playCount: number;
+  result: number[];
 }
 
 const SIZES = new Map<string, GameConfig>();
@@ -91,6 +118,7 @@ SIZES.set("<=320", {
   resultStickWidth: 30,
   buttonHeight: 32,
   phoneWidth: 100,
+  giftBoxWidth: 100,
   pathY: 100,
   stuffWidths: [50, 50, 50, 40, 40, 40, 40, 50, 40],
   fireworks: [30, 60, 90],
@@ -130,6 +158,7 @@ SIZES.set("<=375", {
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 100,
+  giftBoxWidth: 100,
   pathY: 50
 });
 
@@ -158,6 +187,7 @@ SIZES.set("<=525", {
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 120,
+  giftBoxWidth: 120,
   pathY: 50
 });
 
@@ -186,6 +216,7 @@ SIZES.set("<=768", {
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 200,
+  giftBoxWidth: 300,
   pathY: 100
 });
 
@@ -206,6 +237,7 @@ SIZES.set("<=1366", {
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 180,
+  giftBoxWidth: 500,
   pathY: 100
 });
 
@@ -226,6 +258,7 @@ SIZES.set("<=1440", {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
+  giftBoxWidth: 300,
   pathY: 100
 });
 
@@ -246,6 +279,7 @@ SIZES.set("<=1720", {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
+  giftBoxWidth: 300,
   pathY: 100
 });
 
@@ -266,6 +300,7 @@ SIZES.set(">1720", {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
+  giftBoxWidth: 400,
   pathY: 100
 });
 
@@ -288,6 +323,7 @@ function Cup({
   onShakeEnd: () => void;
 }) {
   const gameData = useContext(GameContext);
+  const dispatch = useContext(GameDispatchContext);
   const screen = gameData.screen
   const [imageBack] = useImage("/assets/tiktok-game/cup-back.desk.png");
   const [imageFront] = useImage("/assets/tiktok-game/cup-front.desk.png");
@@ -322,7 +358,7 @@ function Cup({
     direction: "right",
     step: 5,
     shakeCount: 0,
-    maxShake: 100
+    maxShake: 100,
   });
 
   const update = () => {
@@ -368,8 +404,9 @@ function Cup({
   }, []);
 
   useEffect(() => {
-    
+
     if (shaking){
+      getWishingResult();
       if(audioRef.current){
         audioRef.current.play();
       }
@@ -384,6 +421,22 @@ function Cup({
     }
 
   }, [shaking, config]);
+
+  useEffect(() => {
+    if(shaking){
+      const result = [...gameData.result];
+      const current = gameData.current;
+
+      result[current] = getWishingResult();
+      
+      dispatch({
+        ...gameData,
+        type: "UPDATE",
+        result,
+        current: current + 1
+      });
+    }
+  }, [shaking])
 
   return <>
     <Layer imageSmoothingEnabled onTap={() => {
@@ -626,18 +679,38 @@ function Mask() {
   return <Rect fill="#000" x={config.x} y={0} width={config.w} height={window.innerHeight} />
 }
 
+const LIST_RESULT = [
+  { image: "/assets/tiktok-game/wishing-stick-without-bling.desk.png", type: "hạnh phúc", text1: "Hạnh phúc hút tới quanh ta", text2: "TikTok vui vẻ, bao la tiếng cười"},
+  { image: "/assets/tiktok-game/que-so-2.desk.png", type: "may mắn", text1: "May mắn hút đến không ngờ", text2: "TikTok cơ hội, giấc mơ thành hình"},
+  { image: "/assets/tiktok-game/que-so-3.desk.png", type: "tình yêu", text1: "TikTok thêu dệt mộng mơ", text2: "Yêu thương sâu đậm, chẳng mờ phai nhanh"},
+  { image: "/assets/tiktok-game/que-so-4.desk.png", type: "sự nghiệp", text1: "TikTok dẫn lối vinh quang", text2: "Thăng hoa sự nghiệp, muôn vàn niềm vui"},
+  { image: "/assets/tiktok-game/que-so-5.desk.png", type: "sức khỏe", text1: "Tinh thần phấn chấn mỗi ngày", text2: "TikTok lành mạnh, tương lai sáng ngời"},
+  { image: "/assets/tiktok-game/que-so-6.desk.png", type: "tài lộc", text1: "Tài lộc hút đến không ngừng", text2: "TikTok thịnh vượng, vui mừng kinh doanh"},
+  { image: "/assets/tiktok-game/que-so-7.desk.png", type: "sáng tạo", text1: "Sáng tạo hút đến thật nhiều", text2: "TikTok ý tưởng, thành công rạng ngời"},
+  { image: "/assets/tiktok-game/que-so-8.desk.png", type: "kiến thức", text1: "TikTok khuyến khích siêng năng", text2: "Thành công vang dội, mục tiêu đạt thành"},
+  { image: "/assets/tiktok-game/que-so-9.desk.png", type: '"deal" to', text1: "Deal to hút đến liền tay", text2: "TikTok lan tỏa, ngày ngày thăng hoa"}
+];
+
+const SPECIAL_RESULT = [
+  {image: "/assets/tiktok-game/que-may-man.desk.png", type: "", text1: "", text2: ""}
+]
+
 function StickResult({
   onBack
 }: {
   onBack: () => void;
 }) {
-  const gameConfig = getGameConfig();
-
-  const [image] = useImage("/assets/tiktok-game/wishing-stick-without-bling.desk.png");
+  const gameData  = useContext(GameContext)
+  const result = gameData.result;
+  const current = gameData.current - 1;
+  const playCount = gameData.playCount;
+  
+  const dataResult = current < playCount - 1 ? LIST_RESULT[result[current === -1 ? 0 : current]] : SPECIAL_RESULT[0];
+  const [image] = useImage(dataResult.image);
   const [backButtonImage] = useImage("/assets/tiktok-game/back-button.desk.png");
   const [show, showResult] = useState(false);
-  const [displayText, showText] = useState(false);
-  const width = gameConfig.resultStickWidth;
+  const [display, displayResult] = useState(false);
+  const width = gameData.resultStickWidth;
   const height = width * 1586 / 215;
 
   const [config, setConfig] = useState({
@@ -657,24 +730,24 @@ function StickResult({
     if (currentConfig.y < 20) currentConfig.y = 20;
 
     if (currentConfig.rotation < 70) setConfig(currentConfig);
-    else {
-      showText(true);
-    }
+    else displayResult(true);
   }
 
   useEffect(() => {
-    if (show) window.requestAnimationFrame(update);
+    if (show) 
+      if(current < playCount - 1) window.requestAnimationFrame(update);
+      else displayResult(true);
   }, [show, config])
 
-  const fontBase = gameConfig.font.size;
-  const lineHeightBase = gameConfig.font.lineHeight;
+  const fontBase = gameData.font.size;
+  const lineHeightBase = gameData.font.lineHeight;
 
   const measureText = (input: string) => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.fillText(input, 0, 0);
-      ctx.font = `bold ${gameConfig.font.size * 2}px ${gameConfig.font.family}`;
+      ctx.font = `bold ${gameData.font.size * 2}px ${gameData.font.family}`;
       return ctx.measureText(input).width;
     }
     return 0;
@@ -687,23 +760,91 @@ function StickResult({
   yLines[2] = yLines[1] + lineHeightBase + (fontBase + 4) + fontBase;
   yLines[3] = yLines[2] + lineHeightBase + (fontBase + 4) / 4;
 
-  const buttonWidth = 1308 / 319 * gameConfig.buttonHeight;
+  const buttonWidth = 1308 / 319 * gameData.buttonHeight;
+
+  const fullType = "Hút " + dataResult.type;
 
   return (
     <>
-      <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
+      {current < playCount - 1 || !display ? <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
         showResult(true);
-      }} />
-      {displayText ? <>
-        <Text text={"Que xam so 1:"} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
-        <Text text={"Hut"} fill={"#fff"} x={- (measureText("Hut tinh yeu") / 2) + measureText("Hut") / 2} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
-        <Text text={"tinh yeu"} fill={"#fd0048"} x={- (measureText("Hut tinh yeu") / 2) + measureText("tinh yeu") / 2 + measureText("Hut ")} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
-        <Text text={"Tiktok theu det mong mo"} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[2]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Text text={"Yeu thuong sau dam, chang mo phai nhanh"} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[3]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Image onTap={onBack} onClick={onBack} image={backButtonImage} x={window.innerWidth / 2 - buttonWidth / 2} y={window.innerHeight / 2 + yLines[3] + 40} width={buttonWidth} height={gameConfig.buttonHeight}></Image>
+      }} /> : null}
+      {(current < playCount - 1 && display) ? <>
+        <Text text={`Quẻ săm số ${result[current] + 1}:`} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
+        <Text text={"Hút"} fill={"#fff"} x={- (measureText(fullType) / 2) + measureText("Hut") / 2} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
+        <Text text={dataResult.type} fill={"#fd0048"} x={- (measureText(fullType) / 2) + measureText(dataResult.type) / 2 + measureText("Hút ")} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
+        <Text text={dataResult.text1} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[2]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
+        <Text text={dataResult.text2} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[3]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
+        <Image onTap={onBack} onClick={onBack} image={backButtonImage} x={window.innerWidth / 2 - buttonWidth / 2} y={window.innerHeight / 2 + yLines[3] + 40} width={buttonWidth} height={gameData.buttonHeight}></Image>
       </> : null}
+      {(current == playCount - 1 && display) ? <GiftBox /> : null}
     </>
   )
+}
+
+function GiftBox() {
+  const gameData = useContext(GameContext);
+
+  const [upperImage] = useImage("/assets/tiktok-game/box-upper.desk.png");
+  const [lowerImage] = useImage("/assets/tiktok-game/box-lower.desk.png");
+  const [firstGiftImage] = useImage("/assets/tiktok-game/qua-1.desk.png");
+  const [showGift, setShowGift] = useState(false);
+
+  const screen = gameData.screen;
+  const lwidth = gameData.giftBoxWidth;
+  const lheight = lwidth * BOX_LOWER[1] / BOX_LOWER[0];
+
+  const uwidth = gameData.giftBoxWidth + 2;
+  const uheight = uwidth * BOX_UPPER[1] / BOX_UPPER[0];
+
+  const lx = screen.width / 2 - lwidth / 2;
+  const ux = screen.width / 2 - uwidth / 2 - uwidth / 16;
+
+  const ly = screen.height / 2;
+  const uy = ly - uheight / 20;
+
+  const [gift, setGift] = useState({
+    width: 100,
+    x: screen.width / 2 - 50,
+    y: screen.height / 2 - 2 * 100 / 3
+  })
+  
+  const giftWitdh = 100;
+  const giftX = screen.width / 2 - giftWitdh / 2;
+  const giftY = screen.height / 2 - 2 * giftWitdh / 3;
+
+  const [config, setConfig] = useState({
+    x: ux,
+    y: uy,
+    r: -17
+  })
+
+  const update = () => {
+    const newConfig = {...config};
+    newConfig.r += 1;
+    newConfig.y -= 15;
+    newConfig.x += 10;
+    setConfig(newConfig);
+    const newGift = {...gift};
+    newGift.width += 25;
+    newGift.x = screen.width / 2 - newGift.width / 2;
+    newGift.y = screen.height / 2 - 2 * newGift.width / 3 + newGift.width / 6;
+    setGift(newGift);
+  }
+
+  useEffect(() => {
+    if(config.r != 0 && showGift) {
+      setTimeout(() => {
+        window.requestAnimationFrame(update);
+      }, 1000 / 30);
+    }
+  }, [config, showGift]);
+
+  return <>
+    <Image image={lowerImage} x={lx} y={ly} width={lwidth} height={lheight}/>
+    <Image image={firstGiftImage} width={gift.width} height={gift.width} x={gift.x} y={gift.y} />
+    <Image image={upperImage} x={config.x} y={config.y} width={uwidth} height={uheight} rotation={config.r} onClick={() => { setShowGift(true) }} onTap={() => { setShowGift(true) }}/>
+  </>
 }
 
 function Button({
@@ -814,6 +955,7 @@ function NameLogo() {
 }
 
 function App() {
+  const playCount = getPlayTimes();
   const [gameData, dispatch] = useReducer(
     GameReducer,
     {
@@ -821,6 +963,9 @@ function App() {
       layout: window.innerWidth < window.innerHeight ? "mobile" : "desktop",
       step: 0,
       orientation: window.screen.orientation.type.startsWith("landscape") ? "landscape" : "portrait", 
+      current: 0,
+      playCount: playCount,
+      result: generateDefaultResult(playCount),
       screen: {
         dpr: window.devicePixelRatio,
         width: window.innerWidth,
