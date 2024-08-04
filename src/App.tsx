@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './index.css';
 import { UserContext } from './contexts';
 import Game from './modules/Game';
-import { IUser, Step } from './types/type';
+import { IUser } from './types/type';
 // import GiftForm from './modules/GiftForm';
 import NewRegisterForm from './modules/NewRegister';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
