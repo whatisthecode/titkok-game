@@ -32,6 +32,9 @@ const LARGE_BUTTON = [392, 104];
 const CUP = [911, 1096];
 const CUP_LOWER = [911, 282];
 
+const BOX_LOWER = [2148, 1030];
+const BOX_UPPER = [2154, 1288];
+
 const FLOWERS = [
   [0, 0],
   [156, 135],
@@ -41,194 +44,130 @@ const FLOWERS = [
 
 const SIZES = new Map<string, GameConfig>();
 
-SIZES.set('<=320', {
+SIZES.set("<=320", {
   logoWidth: 100,
   nameLogoHeight: 40,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 12,
     lineHeight: 16,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 110,
   ruleBannerHeight: 150,
   resultStickWidth: 30,
   buttonHeight: 32,
   phoneWidth: 100,
+  giftBoxWidth: 100,
   pathY: 100,
   stuffWidths: [50, 50, 50, 40, 40, 40, 40, 50, 40],
   fireworks: [30, 60, 90],
-  flowers: [
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 65,
-      y: window.innerHeight - 75,
-      w: 25,
-      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-  ],
+  flowers: [{
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 65, y: window.innerHeight - 75, w: 25, h: FLOWERS[1][1] * 25 / FLOWERS[1][0]
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }]
 });
 
-SIZES.set('<=375', {
+SIZES.set("<=375", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 16,
     lineHeight: 20,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 120,
   ruleBannerHeight: 180,
   stuffWidths: [70, 70, 70, 70, 60, 70, 60, 70, 70],
   fireworks: [30, 60, 90],
-  flowers: [
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 75,
-      y: window.innerHeight - 155,
-      w: 25,
-      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-  ],
+  flowers: [{
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 75, y: window.innerHeight - 155, w: 25, h: FLOWERS[1][1] * 25 / FLOWERS[1][0]
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }],
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 100,
-  pathY: 50,
+  giftBoxWidth: 100,
+  pathY: 50
 });
 
-SIZES.set('<=525', {
+SIZES.set("<=525", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 16,
     lineHeight: 20,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 120,
   ruleBannerHeight: 180,
   stuffWidths: [100, 100, 100, 100, 60, 100, 60, 100, 100],
   fireworks: [30, 60, 90],
-  flowers: [
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 75,
-      y: window.innerHeight - 155,
-      w: 25,
-      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-  ],
+  flowers: [{
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 75, y: window.innerHeight - 155, w: 25, h: FLOWERS[1][1] * 25 / FLOWERS[1][0]
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }],
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 120,
-  pathY: 50,
+  giftBoxWidth: 120,
+  pathY: 50
 });
 
-SIZES.set('<=768', {
+SIZES.set("<=768", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 16,
     lineHeight: 20,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
   stuffWidths: [120, 120, 120, 100, 70, 100, 70, 120, 100],
   fireworks: [30, 60, 90],
-  flowers: [
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 75,
-      y: window.innerHeight - 155,
-      w: 25,
-      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-    {
-      x: 0,
-      y: 0,
-      w: 0,
-      h: 0,
-    },
-  ],
+  flowers: [{
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 75, y: window.innerHeight - 155, w: 25, h: FLOWERS[1][1] * 25 / FLOWERS[1][0]
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }, {
+    x: 0, y: 0, w: 0, h: 0
+  }],
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 200,
-  pathY: 100,
+  giftBoxWidth: 300,
+  pathY: 100
 });
 
-SIZES.set('<=1366', {
+SIZES.set("<=1366", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 16,
     lineHeight: 20,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
@@ -238,17 +177,18 @@ SIZES.set('<=1366', {
   resultStickWidth: 40,
   buttonHeight: 40,
   phoneWidth: 180,
-  pathY: 100,
+  giftBoxWidth: 500,
+  pathY: 100
 });
 
-SIZES.set('<=1440', {
+SIZES.set("<=1440", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 20,
     lineHeight: 24,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
@@ -258,17 +198,18 @@ SIZES.set('<=1440', {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
-  pathY: 100,
+  giftBoxWidth: 300,
+  pathY: 100
 });
 
-SIZES.set('<=1720', {
+SIZES.set("<=1720", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 20,
     lineHeight: 24,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
@@ -278,17 +219,18 @@ SIZES.set('<=1720', {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
-  pathY: 100,
+  giftBoxWidth: 300,
+  pathY: 100
 });
 
-SIZES.set('>1720', {
+SIZES.set(">1720", {
   logoWidth: 200,
   nameLogoHeight: 60,
   font: {
-    family: 'TikTokDisplayFont',
+    family: "TikTokDisplayFont",
     size: 20,
     lineHeight: 24,
-    style: 'normal',
+    style: "normal"
   },
   titleBannerHeight: 160,
   ruleBannerHeight: 280,
@@ -298,7 +240,8 @@ SIZES.set('>1720', {
   resultStickWidth: 50,
   buttonHeight: 48,
   phoneWidth: 200,
-  pathY: 100,
+  giftBoxWidth: 400,
+  pathY: 100
 });
 
 function getGameConfig(): GameConfig {
@@ -316,6 +259,7 @@ function getGameConfig(): GameConfig {
 
 function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
   const gameData = useContext(GameContext);
+  const dispatch = useContext(GameDispatchContext);
   const screen = gameData.screen;
   const [imageBack] = useImage('/assets/tiktok-game/cup-back.desk.png');
   const [imageFront] = useImage('/assets/tiktok-game/cup-front.desk.png');
@@ -751,9 +695,7 @@ function StickResult({
     if (currentConfig.y < 20) currentConfig.y = 20;
 
     if (currentConfig.rotation < 70) setConfig(currentConfig);
-    else {
-      showText(true);
-    }
+    else displayResult(true);
   };
 
   useEffect(() => {
@@ -762,15 +704,15 @@ function StickResult({
       else displayResult(true);
   }, [show, config])
 
-  const fontBase = gameConfig.font.size;
-  const lineHeightBase = gameConfig.font.lineHeight;
+  const fontBase = gameData.font.size;
+  const lineHeightBase = gameData.font.lineHeight;
 
   const measureText = (input: string) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.fillText(input, 0, 0);
-      ctx.font = `bold ${gameConfig.font.size * 2}px ${gameConfig.font.family}`;
+      ctx.font = `bold ${gameData.font.size * 2}px ${gameData.font.family}`;
       return ctx.measureText(input).width;
     }
     return 0;
