@@ -43,6 +43,7 @@ const NewRegisterForm = () => {
   };
 
   const handleSubmit = async () => {
+    Cookies.set('tethut2025email', convertToBase64(form.email), { expires: 365 });
     if (!validateForm()) return;
     setIsSubmitting(true);
     await registerUser(form)
@@ -53,7 +54,6 @@ const NewRegisterForm = () => {
         }
         setUserData(data);
         setIsSubmitting(false);
-        Cookies.set('tethut2025email', convertToBase64(form.email), { expires: 365 });
       })
       .catch(error => {
         console.error('Đã có lỗi xảy ra. Vui lòng thử lại', error);
