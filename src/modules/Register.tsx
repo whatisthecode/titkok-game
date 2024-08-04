@@ -11,7 +11,7 @@ type Props = {
   setStep: (step: Step) => void;
 };
 
-const RegisterForm = ({ setStep }: Props) => {
+const RegisterForm = () => {
   const { setUserData } = useUser();
   const [form, setForm] = useState({
     firstName: '',

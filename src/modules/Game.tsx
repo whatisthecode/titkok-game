@@ -708,6 +708,8 @@ function StickResult({
   const current = gameData.current - 1;
   const playCount = gameData.playCount;
   
+  // console.log(gameData);
+
   const dataResult = current < playCount - 1 ? LIST_RESULT[result[current === -1 ? 0 : current]] : SPECIAL_RESULT[0];
   const [image] = useImage(dataResult.image);
   const [backButtonImage] = useImage("/assets/tiktok-game/back-button.desk.png");
@@ -998,7 +1000,7 @@ function NameLogo() {
   );
 }
 
-function Game({ setStep }: Props) {
+function Game() {
   const playCount = getPlayTimes();
   const [gameData, dispatch] = useReducer(GameReducer, {
     ...getGameConfig(),
