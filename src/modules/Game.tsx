@@ -6,7 +6,7 @@ import { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { GameConfig, GameData, Layout, Step, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
-import { generateDefaultResult, getPlayTimes } from '../util';
+import { generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
 
 type Props = {
   setStep: (step: Step) => void;
@@ -256,27 +256,32 @@ function getGameConfig(): GameConfig {
   return SIZES.get('<=1366') as GameConfig;
 }
 
-function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
+function Cup({
+  onShakeEnd
+}: {
+  onShakeEnd: () => void;
+}) {
   const gameData = useContext(GameContext);
-  const screen = gameData.screen;
-  const [imageBack] = useImage('/assets/tiktok-game/cup-back.desk.png');
-  const [imageFront] = useImage('/assets/tiktok-game/cup-front.desk.png');
-  const [imageStick] = useImage('/assets/tiktok-game/stick.desk.png');
+  const dispatch = useContext(GameDispatchContext);
+  const screen = gameData.screen
+  const [imageBack] = useImage("/assets/tiktok-game/cup-back.desk.png");
+  const [imageFront] = useImage("/assets/tiktok-game/cup-front.desk.png");
+  const [imageStick] = useImage("/assets/tiktok-game/stick.desk.png");
 
   const [shaking, shake] = useState(false);
 
   const width = gameData.phoneWidth;
-  const upperHeight = (width * 104) / 909;
+  const upperHeight = width * 104 / 909;
   const layout = gameData.layout as Layout;
-
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(layout, gameData.screen);
+  
+  const {height: pathHeight, rawHeight: rawPathHeight} = getPathSize(layout, gameData.screen);
   const pathY = pathHeight - rawPathHeight;
 
-  const cupLowerHeight = (width * CUP_LOWER[1]) / CUP_LOWER[0];
-  const height = (width * CUP[1]) / CUP[0];
+  const cupLowerHeight = width * CUP_LOWER[1] / CUP_LOWER[0];
+  const height = width * CUP[1] / CUP[0];
 
   const stickWidth = width / 5;
-  const stickHeight = (stickWidth * 1586) / 215;
+  const stickHeight = stickWidth * 1586 / 215;
 
   const x = screen.width / 2 - width / 2;
 
@@ -289,7 +294,7 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
     y: frontY,
     minX: x - 10,
     maxX: x + 10,
-    direction: 'right',
+    direction: "right",
     step: 5,
     shakeCount: 0,
     maxShake: 100,
@@ -298,17 +303,18 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
   const update = () => {
     const currentConfig = { ...config };
     currentConfig.shakeCount += 1;
-    if (currentConfig.direction == 'right') {
+    if (currentConfig.direction == "right") {
       currentConfig.x += currentConfig.step;
       if (currentConfig.x > currentConfig.maxX) {
         currentConfig.x = currentConfig.maxX - currentConfig.step;
-        currentConfig.direction = 'left';
+        currentConfig.direction = "left";
       }
-    } else {
+    }
+    else {
       currentConfig.x -= currentConfig.step;
       if (currentConfig.x < currentConfig.minX) {
         currentConfig.x = currentConfig.minX + currentConfig.step;
-        currentConfig.direction = 'right';
+        currentConfig.direction = "right";
       }
     }
 
@@ -320,119 +326,76 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
     }
 
     setConfig(currentConfig);
-  };
+  }
 
   const audioRef = useRef<HTMLAudioElement>();
 
   useEffect(() => {
-    const audioElement = document.createElement('audio');
-    audioElement.src = '/assets/tiktok-game/kau-cim.mp3';
+    const audioElement = document.createElement("audio");
+    audioElement.src = "/assets/tiktok-game/kau-cim.mp3";
     document.documentElement.append(audioElement);
     audioRef.current = audioElement;
 
     return () => {
       audioRef.current && audioRef.current.remove();
       audioRef.current = undefined;
-    };
+    }
   }, []);
 
   useEffect(() => {
-    if (shaking) {
-      if (audioRef.current) {
+
+    if (shaking){
+      getWishingResult();
+      if(audioRef.current){
         audioRef.current.play();
       }
-
+        
       setTimeout(() => {
         window.requestAnimationFrame(update);
       }, 1000 / 120);
-    } else if (audioRef.current) {
+    }
+    else if(audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.pause();
     }
+
   }, [shaking, config]);
 
-  return (
-    <>
-      <Layer
-        imageSmoothingEnabled
-        onTap={() => {
-          shake(true);
-        }}
-        onClick={() => {
-          shake(true);
-        }}
-      >
-        <Image image={imageBack} x={config.x} y={topY} width={width} height={upperHeight} />
-        <Image
-          image={imageStick}
-          x={config.x + 10}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (2 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-          rotation={-20}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (3 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (4 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (5 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-          rotation={-10}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (6 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (7 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + (9 * stickWidth) / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-          rotation={20}
-        />
-        <Image
-          image={imageStick}
-          x={config.x + stickWidth / 2}
-          y={stickY}
-          width={stickWidth}
-          height={stickHeight}
-        />
-        <Image image={imageFront} x={config.x} y={frontY} width={width} height={height} />
-      </Layer>
-    </>
-  );
+  useEffect(() => {
+    if(shaking){
+      const result = [...gameData.result];
+      const current = gameData.current;
+
+      result[current] = getWishingResult();
+      
+      dispatch({
+        ...gameData,
+        type: "UPDATE",
+        result,
+        current: current + 1
+      });
+    }
+  }, [shaking])
+
+  return <>
+    <Layer imageSmoothingEnabled onTap={() => {
+      shake(true);
+    }} onClick={() => {
+      shake(true);
+    }}>
+      <Image image={imageBack} x={config.x} y={topY} width={width} height={upperHeight} />
+      <Image image={imageStick} x={config.x + 10} y={stickY} width={stickWidth} height={stickHeight} />
+      <Image image={imageStick} x={config.x + 2 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} rotation={-20} />
+      <Image image={imageStick} x={config.x + 3 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
+      <Image image={imageStick} x={config.x + 4 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
+      <Image image={imageStick} x={config.x + 5 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} rotation={-10} />
+      <Image image={imageStick} x={config.x + 6 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
+      <Image image={imageStick} x={config.x + 7 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
+      <Image image={imageStick} x={config.x + 9 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} rotation={20} />
+      <Image image={imageStick} x={config.x + stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight}/>
+      <Image image={imageFront} x={config.x} y={frontY} width={width} height={height} />
+    </Layer>
+  </>
 }
 
 function Firework({
