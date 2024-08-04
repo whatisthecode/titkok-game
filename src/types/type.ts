@@ -29,7 +29,7 @@ export interface GameFontConfig {
   style: string;
 }
 
-interface GameConfig {
+export interface GameConfig {
   logoWidth: number;
   nameLogoHeight: number;
   font: GameFontConfig;

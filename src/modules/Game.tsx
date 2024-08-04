@@ -2,11 +2,11 @@ import { Stage, Layer, Image, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
 
 import './Game.css';
-import { useContext, useEffect, useReducer, useRef, useState } from 'react';
+import { Children, FunctionComponent, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { GameConfig, GameData, Layout, Step, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
-import { generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
+import { LIST_RESULT, generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
 
 type Props = {
   setStep: (step: Step) => void;
@@ -28,6 +28,7 @@ const NAME_LOGO = [702, 185];
 const TITLE_BANNERS = [3974, 1459];
 const RULE_BANNERS = [2348, 1175];
 const BUTTON = [327, 80];
+const LARGE_BUTTON = [392, 104];
 const CUP = [911, 1096];
 const CUP_LOWER = [911, 282];
 
@@ -273,8 +274,8 @@ function Cup({
   const width = gameData.phoneWidth;
   const upperHeight = width * 104 / 909;
   const layout = gameData.layout as Layout;
-  
-  const {height: pathHeight, rawHeight: rawPathHeight} = getPathSize(layout, gameData.screen);
+
+  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(layout, gameData.screen);
   const pathY = pathHeight - rawPathHeight;
 
   const cupLowerHeight = width * CUP_LOWER[1] / CUP_LOWER[0];
@@ -344,17 +345,17 @@ function Cup({
 
   useEffect(() => {
 
-    if (shaking){
+    if (shaking) {
       getWishingResult();
-      if(audioRef.current){
+      if (audioRef.current) {
         audioRef.current.play();
       }
-        
+
       setTimeout(() => {
         window.requestAnimationFrame(update);
       }, 1000 / 120);
     }
-    else if(audioRef.current) {
+    else if (audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.pause();
     }
@@ -362,20 +363,35 @@ function Cup({
   }, [shaking, config]);
 
   useEffect(() => {
-    if(shaking){
+    if (shaking) {
       const result = [...gameData.result];
       const current = gameData.current;
+      const playCount = gameData.playCount;
 
-      result[current] = getWishingResult();
-      
-      dispatch({
-        ...gameData,
-        type: "UPDATE",
-        result,
-        current: current + 1
-      });
+      if (current + 1 < playCount) {
+        result[current] = getWishingResult();
+
+        dispatch({
+          ...gameData,
+          type: "UPDATE",
+          result,
+          current: current + 1
+        });
+      }
+      else {
+        result[current] = getWishingResult();
+
+        dispatch({
+          ...gameData,
+          type: "UPDATE",
+          result,
+          current: current
+        });
+      }
     }
   }, [shaking])
+
+  // console.log(getWishingResult());
 
   return <>
     <Layer imageSmoothingEnabled onTap={() => {
@@ -392,7 +408,7 @@ function Cup({
       <Image image={imageStick} x={config.x + 6 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
       <Image image={imageStick} x={config.x + 7 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
       <Image image={imageStick} x={config.x + 9 * stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} rotation={20} />
-      <Image image={imageStick} x={config.x + stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight}/>
+      <Image image={imageStick} x={config.x + stickWidth / 2} y={stickY} width={stickWidth} height={stickHeight} />
       <Image image={imageFront} x={config.x} y={frontY} width={width} height={height} />
     </Layer>
   </>
@@ -645,41 +661,27 @@ function Mask() {
   return <Rect fill="#000" x={config.x} y={0} width={config.w} height={window.innerHeight} />;
 }
 
-const LIST_RESULT = [
-  { image: "/assets/tiktok-game/wishing-stick-without-bling.desk.png", type: "hạnh phúc", text1: "Hạnh phúc hút tới quanh ta", text2: "TikTok vui vẻ, bao la tiếng cười"},
-  { image: "/assets/tiktok-game/que-so-2.desk.png", type: "may mắn", text1: "May mắn hút đến không ngờ", text2: "TikTok cơ hội, giấc mơ thành hình"},
-  { image: "/assets/tiktok-game/que-so-3.desk.png", type: "tình yêu", text1: "TikTok thêu dệt mộng mơ", text2: "Yêu thương sâu đậm, chẳng mờ phai nhanh"},
-  { image: "/assets/tiktok-game/que-so-4.desk.png", type: "sự nghiệp", text1: "TikTok dẫn lối vinh quang", text2: "Thăng hoa sự nghiệp, muôn vàn niềm vui"},
-  { image: "/assets/tiktok-game/que-so-5.desk.png", type: "sức khỏe", text1: "Tinh thần phấn chấn mỗi ngày", text2: "TikTok lành mạnh, tương lai sáng ngời"},
-  { image: "/assets/tiktok-game/que-so-6.desk.png", type: "tài lộc", text1: "Tài lộc hút đến không ngừng", text2: "TikTok thịnh vượng, vui mừng kinh doanh"},
-  { image: "/assets/tiktok-game/que-so-7.desk.png", type: "sáng tạo", text1: "Sáng tạo hút đến thật nhiều", text2: "TikTok ý tưởng, thành công rạng ngời"},
-  { image: "/assets/tiktok-game/que-so-8.desk.png", type: "kiến thức", text1: "TikTok khuyến khích siêng năng", text2: "Thành công vang dội, mục tiêu đạt thành"},
-  { image: "/assets/tiktok-game/que-so-9.desk.png", type: '"deal" to', text1: "Deal to hút đến liền tay", text2: "TikTok lan tỏa, ngày ngày thăng hoa"}
-];
-
-const SPECIAL_RESULT = [
-  {image: "/assets/tiktok-game/que-may-man.desk.png", type: "", text1: "", text2: ""}
-]
-
 function StickResult({
   onBack
 }: {
   onBack: () => void;
 }) {
-  const gameData  = useContext(GameContext)
+  const gameData = useContext(GameContext)
   const result = gameData.result;
   const current = gameData.current - 1;
-  const playCount = gameData.playCount;
-  
-  // console.log(gameData);
+  // const playCount = gameData.playCount;
+  console.log(current, result);
 
-  const dataResult = current < playCount - 1 ? LIST_RESULT[result[current === -1 ? 0 : current]] : SPECIAL_RESULT[0];
+  const dataResult = LIST_RESULT[result[current === -1 ? 0 : current]];
+  const isSpecial = dataResult.type === "gift";
+
   const [image] = useImage(dataResult.image);
-  const [backButtonImage] = useImage("/assets/tiktok-game/back-button.desk.png");
+  const [buttonImage] = useImage(isSpecial ? "/assets/tiktok-game/tha-nhe-thong-tin.desk.png" : "/assets/tiktok-game/back-button.desk.png");
   const [show, showResult] = useState(false);
   const [display, displayResult] = useState(false);
   const width = gameData.resultStickWidth;
   const height = width * 1586 / 215;
+  const screen = gameData.screen;
 
   const [config, setConfig] = useState({
     x: window.innerWidth / 2 - width / 2,
@@ -702,8 +704,8 @@ function StickResult({
   }
 
   useEffect(() => {
-    if (show) 
-      if(current < playCount - 1) window.requestAnimationFrame(update);
+    if (show)
+      if (!isSpecial) window.requestAnimationFrame(update);
       else displayResult(true);
   }, [show, config])
 
@@ -728,24 +730,28 @@ function StickResult({
   yLines[2] = yLines[1] + lineHeightBase + (fontBase + 4) + fontBase;
   yLines[3] = yLines[2] + lineHeightBase + (fontBase + 4) / 4;
 
-  const buttonWidth = 1308 / 319 * gameData.buttonHeight;
+  const buttonHeight = isSpecial ? gameData.buttonHeight * 2 : gameData.buttonHeight;
+  const buttonWidth = (isSpecial ? (LARGE_BUTTON[0] / LARGE_BUTTON[1]) : (BUTTON[0] / BUTTON[1])) * buttonHeight;
 
   const fullType = "Hút " + dataResult.type;
 
   return (
     <>
-      {current < playCount - 1 || !display ? <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
+      {!isSpecial || !display ? <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
         showResult(true);
       }} /> : null}
-      {(current < playCount - 1 && display) ? <>
-        <Text text={`Quẻ săm số ${result[current] + 1}:`} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
-        <Text text={"Hút"} fill={"#fff"} x={- (measureText(fullType) / 2) + measureText("Hut") / 2} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
-        <Text text={dataResult.type} fill={"#fd0048"} x={- (measureText(fullType) / 2) + measureText(dataResult.type) / 2 + measureText("Hút ")} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
-        <Text text={dataResult.text1} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[2]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Text text={dataResult.text2} fill={"#fff"} width={window.innerWidth} align="center" y={window.innerHeight / 2 + yLines[3]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Image onTap={onBack} onClick={onBack} image={backButtonImage} x={window.innerWidth / 2 - buttonWidth / 2} y={window.innerHeight / 2 + yLines[3] + 40} width={buttonWidth} height={gameData.buttonHeight}></Image>
+      {(!isSpecial && display) ? <>
+        <Text text={`Quẻ săm số ${result[current] + 1}:`} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
+        <Text text={"Hút"} fill={"#fff"} x={- (measureText(fullType) / 2) + measureText("Hut") / 2} width={screen.width} align="center" y={screen.height / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
+        <Text text={dataResult.type} fill={"#fd0048"} x={- (measureText(fullType) / 2) + measureText(dataResult.type) / 2 + measureText("Hút ")} width={screen.width} align="center" y={screen.height / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
+        <Text text={dataResult.text1} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[2]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
+        <Text text={dataResult.text2} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[3]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
+        <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height / 2 + yLines[3] + 40} width={buttonWidth} height={gameData.buttonHeight}></Image>
       </> : null}
-      {(current == playCount - 1 && display) ? <GiftBox /> : null}
+      {(isSpecial && display) ? <>
+        <GiftBox />
+        <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height - buttonHeight * 3 / 2} width={buttonWidth} height={buttonHeight}></Image>
+      </> : null}
     </>
   )
 }
@@ -753,10 +759,11 @@ function StickResult({
 
 function GiftBox() {
   const gameData = useContext(GameContext);
-
+  const current = gameData.current;
+  const result = gameData.result;
   const [upperImage] = useImage("/assets/tiktok-game/box-upper.desk.png");
   const [lowerImage] = useImage("/assets/tiktok-game/box-lower.desk.png");
-  const [firstGiftImage] = useImage("/assets/tiktok-game/qua-1.desk.png");
+  const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${result[current] + 1}.desk.png`);
   const [showGift, setShowGift] = useState(false);
 
   const screen = gameData.screen;
@@ -777,7 +784,7 @@ function GiftBox() {
     x: screen.width / 2 - 50,
     y: screen.height / 2 - 2 * 100 / 3
   })
-  
+
   const giftWitdh = 100;
   const giftX = screen.width / 2 - giftWitdh / 2;
   const giftY = screen.height / 2 - 2 * giftWitdh / 3;
@@ -789,12 +796,12 @@ function GiftBox() {
   })
 
   const update = () => {
-    const newConfig = {...config};
+    const newConfig = { ...config };
     newConfig.r += 1;
     newConfig.y -= 15;
     newConfig.x += 10;
     setConfig(newConfig);
-    const newGift = {...gift};
+    const newGift = { ...gift };
     newGift.width += 25;
     newGift.x = screen.width / 2 - newGift.width / 2;
     newGift.y = screen.height / 2 - 2 * newGift.width / 3 + newGift.width / 6;
@@ -802,7 +809,7 @@ function GiftBox() {
   }
 
   useEffect(() => {
-    if(config.r != 0 && showGift) {
+    if (config.r != 0 && showGift) {
       setTimeout(() => {
         window.requestAnimationFrame(update);
       }, 1000 / 30);
@@ -810,9 +817,9 @@ function GiftBox() {
   }, [config, showGift]);
 
   return <>
-    <Image image={lowerImage} x={lx} y={ly} width={lwidth} height={lheight}/>
+    <Image image={lowerImage} x={lx} y={ly} width={lwidth} height={lheight} />
     <Image image={firstGiftImage} width={gift.width} height={gift.width} x={gift.x} y={gift.y} />
-    <Image image={upperImage} x={config.x} y={config.y} width={uwidth} height={uheight} rotation={config.r} onClick={() => { setShowGift(true) }} onTap={() => { setShowGift(true) }}/>
+    <Image image={upperImage} x={config.x} y={config.y} width={uwidth} height={uheight} rotation={config.r} onClick={() => { setShowGift(true) }} onTap={() => { setShowGift(true) }} />
   </>
 }
 
@@ -963,24 +970,41 @@ function NameLogo() {
   );
 }
 
-function Game() {
-  const playCount = getPlayTimes();
-  const [gameData, dispatch] = useReducer(GameReducer, {
-    ...getGameConfig(),
-    layout: window.innerWidth < window.innerHeight ? 'mobile' : 'desktop',
-    step: 0,
-    orientation: window.screen.orientation.type.startsWith('landscape') ? 'landscape' : 'portrait',
-    current: 0,
-    playCount,
-    result: generateDefaultResult(playCount),
-    screen: {
-      dpr: window.devicePixelRatio,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      bWidth: 1920,
-      bHeight: 1080,
-    },
-  });
+const Provider: FunctionComponent<{
+  children: React.ReactNode
+}> = ({
+  children
+}) => {
+    const [playCount] = useState(1);
+    const result = useMemo(() => generateDefaultResult(playCount), [playCount]);
+
+    const [gameData, dispatch] = useReducer(GameReducer, {
+      ...getGameConfig(),
+      layout: window.innerWidth < window.innerHeight ? 'mobile' : 'desktop',
+      step: 0,
+      orientation: window.screen.orientation.type.startsWith('landscape') ? 'landscape' : 'portrait',
+      current: 0,
+      playCount: playCount,
+      result,
+      screen: {
+        dpr: window.devicePixelRatio,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        bWidth: 1920,
+        bHeight: 1080,
+      },
+    });
+
+    return (<GameContext.Provider value={gameData}>
+      <GameDispatchContext.Provider value={dispatch}>
+        {children}
+      </GameDispatchContext.Provider>
+    </GameContext.Provider>)
+  }
+
+function GameInner() {
+  const dispatch = useContext(GameDispatchContext);
+  const gameData = useContext(GameContext);
   const [showResult, setShowResut] = useState(false);
   const screen = gameData.screen;
 
@@ -1108,142 +1132,146 @@ function Game() {
   ];
 
   return (
-    <GameContext.Provider value={gameData}>
-      <GameDispatchContext.Provider value={dispatch}>
-        <div
-          className="w-full min-h-dvh justify-end flex flex-col relative overflow-x-hidden"
-          onClick={() => {}}
-        >
-          <Stage width={screen.width} height={screen.height}>
-            <Layer id="background" imageSmoothingEnabled>
-              {currentStep === 0 || currentStep === 1 ? <Phone /> : null}
-              <Path />
-              <Stuff
-                src="/assets/tiktok-game/stuff-1.desk.png"
-                x={stuffConfigs[0].x}
-                y={stuffConfigs[0].y}
-                width={stuffConfigs[0].w}
-                height={stuffConfigs[0].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-2.desk.png"
-                x={stuffConfigs[1].x}
-                y={stuffConfigs[1].y}
-                width={stuffConfigs[1].w}
-                height={stuffConfigs[1].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-3.desk.png"
-                x={stuffConfigs[2].x}
-                y={stuffConfigs[2].y}
-                width={stuffConfigs[2].w}
-                height={stuffConfigs[2].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-4.desk.png"
-                x={stuffConfigs[3].x}
-                y={stuffConfigs[3].y}
-                width={stuffConfigs[3].w}
-                height={stuffConfigs[3].h}
-                rotation={15}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-5.desk.png"
-                x={stuffConfigs[4].x}
-                y={stuffConfigs[4].y}
-                width={stuffConfigs[4].w}
-                height={stuffConfigs[4].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-6.desk.png"
-                x={stuffConfigs[5].x}
-                y={stuffConfigs[5].y}
-                width={stuffConfigs[5].w}
-                height={stuffConfigs[5].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-7.desk.png"
-                x={stuffConfigs[6].x}
-                y={stuffConfigs[6].y}
-                width={stuffConfigs[6].w}
-                height={stuffConfigs[6].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-8.desk.png"
-                x={stuffConfigs[7].x}
-                y={stuffConfigs[7].y}
-                width={stuffConfigs[7].w}
-                height={stuffConfigs[7].h}
-              />
-              <Stuff
-                src="/assets/tiktok-game/stuff-9.desk.png"
-                x={stuffConfigs[8].x}
-                y={stuffConfigs[8].y}
-                width={stuffConfigs[8].w}
-                height={stuffConfigs[8].h}
-              />
-              {/* <Stuff src="/assets/tiktok-game/flower-1.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
-              {/* <Stuff src="/assets/tiktok-game/flower-2.desk.png" x={flowers[1].x} y={flowers[1].y} width={flowers[1].w} height={flowers[1].h} /> */}
-              {/* <Stuff src="/assets/tiktok-game/flower-3.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
-              {/* <Stuff src="/assets/tiktok-game/flower-4.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
-              <Firework
-                src="/assets/tiktok-game/red-firework.desk.png"
-                x={fireworks[0].x}
-                y={fireworks[0].y}
-                width={fireworks[0].w}
-                height={fireworks[0].h}
-              />
-              <Firework
-                src="/assets/tiktok-game/yellow-firework.desk.png"
-                x={fireworks[1].x}
-                y={fireworks[1].y}
-                width={fireworks[1].w}
-                height={fireworks[1].h}
-              />
-              <Firework
-                src="/assets/tiktok-game/blue-firework.desk.png"
-                x={fireworks[2].x}
-                y={fireworks[2].y}
-                width={fireworks[2].w}
-                height={fireworks[2].h}
-              />
-            </Layer>
-            <Layer imageSmoothingEnabled>
-              <TiktokLogo />
-              {currentStep === 0 || currentStep == 2 ? <TitleBanner /> : null}
-              {currentStep === 1 ? (
-                <RuleBanner
-                  onBack={() => {
-                    dispatch({
-                      ...gameData,
-                      step: 0,
-                      type: 'UPDATE',
-                    });
-                  }}
-                />
-              ) : null}
-              {currentStep === 0 ? <ActionGroup /> : null}
-              <NameLogo />
-              {/* <Mask /> */}
-            </Layer>
-            {currentStep === 2 ? (
-              <Cup
-                onShakeEnd={() => {
-                  setShowResut(true);
-                }}
-              />
-            ) : null}
-          </Stage>
-          {showResult ? (
-            <div className="absolute top-0 left-0 w-full h-full z-10">
-              <Stage width={window.innerWidth} height={window.innerHeight}>
-                <Result onBack={() => setShowResut(false)} />
-              </Stage>
-            </div>
+    <div
+      className="w-full min-h-dvh justify-end flex flex-col relative overflow-x-hidden"
+      onClick={() => { }}
+    >
+      <Stage width={screen.width} height={screen.height}>
+        <Layer id="background" imageSmoothingEnabled>
+          {currentStep === 0 || currentStep === 1 ? <Phone /> : null}
+          <Path />
+          <Stuff
+            src="/assets/tiktok-game/stuff-1.desk.png"
+            x={stuffConfigs[0].x}
+            y={stuffConfigs[0].y}
+            width={stuffConfigs[0].w}
+            height={stuffConfigs[0].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-2.desk.png"
+            x={stuffConfigs[1].x}
+            y={stuffConfigs[1].y}
+            width={stuffConfigs[1].w}
+            height={stuffConfigs[1].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-3.desk.png"
+            x={stuffConfigs[2].x}
+            y={stuffConfigs[2].y}
+            width={stuffConfigs[2].w}
+            height={stuffConfigs[2].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-4.desk.png"
+            x={stuffConfigs[3].x}
+            y={stuffConfigs[3].y}
+            width={stuffConfigs[3].w}
+            height={stuffConfigs[3].h}
+            rotation={15}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-5.desk.png"
+            x={stuffConfigs[4].x}
+            y={stuffConfigs[4].y}
+            width={stuffConfigs[4].w}
+            height={stuffConfigs[4].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-6.desk.png"
+            x={stuffConfigs[5].x}
+            y={stuffConfigs[5].y}
+            width={stuffConfigs[5].w}
+            height={stuffConfigs[5].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-7.desk.png"
+            x={stuffConfigs[6].x}
+            y={stuffConfigs[6].y}
+            width={stuffConfigs[6].w}
+            height={stuffConfigs[6].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-8.desk.png"
+            x={stuffConfigs[7].x}
+            y={stuffConfigs[7].y}
+            width={stuffConfigs[7].w}
+            height={stuffConfigs[7].h}
+          />
+          <Stuff
+            src="/assets/tiktok-game/stuff-9.desk.png"
+            x={stuffConfigs[8].x}
+            y={stuffConfigs[8].y}
+            width={stuffConfigs[8].w}
+            height={stuffConfigs[8].h}
+          />
+          {/* <Stuff src="/assets/tiktok-game/flower-1.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
+          {/* <Stuff src="/assets/tiktok-game/flower-2.desk.png" x={flowers[1].x} y={flowers[1].y} width={flowers[1].w} height={flowers[1].h} /> */}
+          {/* <Stuff src="/assets/tiktok-game/flower-3.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
+          {/* <Stuff src="/assets/tiktok-game/flower-4.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
+          <Firework
+            src="/assets/tiktok-game/red-firework.desk.png"
+            x={fireworks[0].x}
+            y={fireworks[0].y}
+            width={fireworks[0].w}
+            height={fireworks[0].h}
+          />
+          <Firework
+            src="/assets/tiktok-game/yellow-firework.desk.png"
+            x={fireworks[1].x}
+            y={fireworks[1].y}
+            width={fireworks[1].w}
+            height={fireworks[1].h}
+          />
+          <Firework
+            src="/assets/tiktok-game/blue-firework.desk.png"
+            x={fireworks[2].x}
+            y={fireworks[2].y}
+            width={fireworks[2].w}
+            height={fireworks[2].h}
+          />
+        </Layer>
+        <Layer imageSmoothingEnabled>
+          <TiktokLogo />
+          {currentStep === 0 || currentStep == 2 ? <TitleBanner /> : null}
+          {currentStep === 1 ? (
+            <RuleBanner
+              onBack={() => {
+                dispatch({
+                  ...gameData,
+                  step: 0,
+                  type: 'UPDATE',
+                });
+              }}
+            />
           ) : null}
+          {currentStep === 0 ? <ActionGroup /> : null}
+          <NameLogo />
+          {/* <Mask /> */}
+        </Layer>
+        {currentStep === 2 ? (
+          <Cup
+            onShakeEnd={() => {
+              setShowResut(true);
+            }}
+          />
+        ) : null}
+      </Stage>
+      {showResult ? (
+        <div className="absolute top-0 left-0 w-full h-full z-10">
+          <Stage width={window.innerWidth} height={window.innerHeight}>
+            <Result onBack={() => setShowResut(false)} />
+          </Stage>
         </div>
-      </GameDispatchContext.Provider>
-    </GameContext.Provider>
+      ) : null}
+    </div>
+  )
+}
+
+function Game() {
+  return (
+    <Provider>
+      <GameInner />
+    </Provider>
   );
 }
 
