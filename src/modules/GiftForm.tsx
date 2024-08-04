@@ -20,7 +20,7 @@ type Form = {
   title: string;
 };
 
-const GiftForm = () => {
+const GiftForm = ({ setStep }: Props) => {
   const { userData, setUserData } = useUser();
 
   const [form, setForm] = useState<Form>({
@@ -32,7 +32,14 @@ const GiftForm = () => {
     company: userData?.company || '',
     title: '',
   });
-  const [errors, setErrors] = useState<Partial<Form>>({});
+  const [errors, setErrors] = useState<Form>({
+    fullName: '',
+    phone: '',
+    address: '',
+    email: '',
+    company: '',
+    title: '',
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
