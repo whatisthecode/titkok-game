@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './index.css';
 import { UserContext } from './contexts';
-import RegisterForm from './modules/Register';
 import Game from './modules/Game';
-import { IUser, Step } from './types/type';
+import { IUser } from './types/type';
 // import GiftForm from './modules/GiftForm';
+import NewRegisterForm from './modules/NewRegister';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const App = () => {
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -14,23 +14,23 @@ const App = () => {
   // const renderComponentByStep = () => {
   //   switch (step) {
   //     case 'register':
-  //       return <Route path="/register" element={<RegisterForm setStep={setStep} />}/>;
+  //       return <NewRegisterForm setStep={setStep} />;
   //     case 'game':
-  //       return <Route path="/game" element={<Game setStep={setStep} />}/>;
-  //     // case 'result':
-  //     //   return <GiftForm setStep={setStep} />;
+  //       return <Game setStep={setStep} />;
+  //     case 'result':
+  //       return <GiftForm setStep={setStep} />;
   //     default:
   //       return null;
   //   }
   // };
   return (
     <UserContext.Provider value={{ userData, setUserData }}>
-      <BrowserRouter basename="/">
+      <Router>
         <Routes>
-          <Route path="/register" element={<RegisterForm />}/>
-          <Route path="/game" element={<Game />}/>
+          <Route path="/" element={<Game />} />
+          <Route path="/form" element={<NewRegisterForm />} /> {/* New route */}
         </Routes>
-      </BrowserRouter>
+      </Router>
     </UserContext.Provider>
   );
 };
