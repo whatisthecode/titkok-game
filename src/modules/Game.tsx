@@ -6,9 +6,9 @@ import { Children, FunctionComponent, useContext, useEffect, useMemo, useReducer
 import { GameConfig, GameData, Layout, Step, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
-import { LIST_RESULT, generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
+import { GIFT_IN_LIST, LIST_RESULT, generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
 import GiftForm from './GiftForm';
-import { getUser, updateUser } from '../services/apiClient';
+import { getGift, getUser, updateUser } from '../services/apiClient';
 
 // type Props = {
 //   setStep: (step: Step) => void;
@@ -381,16 +381,30 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
       const result = [...gameData.result];
       const current = gameData.current;
       const playCount = gameData.playCount;
-
-      if (current + 1 < playCount) {
+      console.log(current, playCount);
+      if (current < playCount) {
         result[current] = getWishingResult();
-
-        dispatch({
-          ...gameData,
-          type: "UPDATE",
-          result,
-          current: current + 1
-        });
+        console.log(GIFT_IN_LIST, result[current]);
+        if(GIFT_IN_LIST.includes(result[current])) {
+          getGift().then(giftId => {
+            if(giftId) result[current] = 9 + giftId - 1;
+            else result[current] = getWishingResult(0, 9);
+            dispatch({
+              ...gameData,
+              type: "UPDATE",
+              result,
+              current: current + 1
+            });
+          });
+        }
+        else {
+          dispatch({
+            ...gameData,
+            type: "UPDATE",
+            result,
+            current: current + 1
+          });
+        }
       }
       else {
         result[current] = getWishingResult();
@@ -404,8 +418,6 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
       }
     }
   }, [shaking])
-
-  console.log(getWishingResult());
 
   return <>
     <Layer imageSmoothingEnabled onTap={() => {
@@ -748,7 +760,6 @@ function StickResult({
   const result = gameData.result;
   const current = gameData.current - 1 === -1 ? gameData.current : gameData.current - 1 ;
   // const playCount = gameData.playCount;
-  console.log(current, result);
 
   const dataResult = LIST_RESULT[result[current]];
   const isSpecial = dataResult.type === "gift";
@@ -812,16 +823,15 @@ function StickResult({
 
   const fullType = "Hút " + dataResult.type;
 
-  console.log(result, current);
-
   const text2Width = Math.min(screen.width - 16, 800);
 
   const uwidth = gameData.giftBoxWidth + 2;
   const uheight = uwidth * BOX_UPPER[1] / BOX_UPPER[0];
 
 
-  const ly = screen.height / 2;
-  const uy = ly + uheight;
+  const _ly = screen.height / 2 + uheight + gameData.giftWidth / 2;
+
+  const ly = _ly + buttonHeight > screen.height ? screen.height / 2 + uheight : _ly;
 
   return (
     <>
@@ -837,6 +847,7 @@ function StickResult({
         <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height / 2 + yLines[3] + 80 + (fontBase * 3.3125)} width={buttonWidth} height={gameData.buttonHeight}></Image>
       </> : null}
       {(isSpecial && display) ? <>
+        <Text text={dataResult.text2} fill={"#fff"} x={screen.width / 2 - text2Width / 2} width={text2Width} align="center" y={screen.height / 2 - gameData.giftWidth * 1.5} lineHeight={1.3125} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
         <GiftBox onAnimateEnd={() => {setShowDropInfoButton(true)}}/>
         {showDropInfoButonn ? (
           <Image 
@@ -844,7 +855,7 @@ function StickResult({
             onClick={onDropInfo}
             image={buttonImage}
             x={screen.width / 2 - buttonWidth / 2}
-            y={uy}
+            y={ly}
             width={buttonWidth}
             height={buttonHeight}
           >
@@ -862,10 +873,11 @@ function GiftBox({
   onAnimateEnd: () => void
 }) {
   const gameData = useContext(GameContext);
-  const current = gameData.current;
+  const current = gameData.current - 1;
   const result = gameData.result;
   const [upperImage] = useImage("/assets/tiktok-game/box-upper.desk.png");
   const [lowerImage] = useImage("/assets/tiktok-game/box-lower.desk.png");
+  // console.log(current, result[current], `/assets/tiktok-game/qua-${result[current] + 1 - 9}.desk.png`);
   const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${result[current] + 1 - 9}.desk.png`);
   const [showGift, setShowGift] = useState(true);
 
@@ -892,8 +904,6 @@ function GiftBox({
     x: screen.width / 2 - giftWitdh / 2,
     y: screen.height / 2 - 2 * giftWitdh / 3
   })
-
-  console.log(gift);
 
   const [config, setConfig] = useState({
     x: ux,
@@ -1145,7 +1155,7 @@ const Provider: FunctionComponent<{
             ...gameData,
             type: "UPDATE",
             userInfo: data,
-            // step: data && data.isPlayed ? 3 : 0
+            step: data && data.isPlayed ? 3 : 0
           })
         })
       }
@@ -1174,8 +1184,6 @@ function GameInner({
   const isLoading = isRegistered && !userInfo;
   const isPlayed = userInfo && userInfo.isPlayed;
 
-  console.log("isPlayed", isPlayed);
-
   const cupWidth = gameData.phoneWidth;
   const cupHeight = (cupWidth * 1096) / 911;
   const cup = {
@@ -1191,7 +1199,6 @@ function GameInner({
 
   useEffect(() => {
     const handleResize = () => {
-      console.log('resizing...');
       const newScreen = {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -1222,7 +1229,6 @@ function GameInner({
   const pathSize = getPathSize(gameData.layout as Layout, screen);
   const phoneSize = getPhoneSize(gameData);
 
-  // console.log("updating...", gameData);
 
   const stuffConfigs: StuffConfig[] = [
     { x: 0, y: 0, w: stuffWidths[0], h: (stuffWidths[0] * STUFFS[0][1]) / STUFFS[0][0] },
@@ -1298,7 +1304,6 @@ function GameInner({
       h: fireworkWidths[2],
     },
   ];
-  console.log("currentStep", gameData);
   return (
     <div
       className="w-full min-h-dvh justify-end flex flex-col relative overflow-x-hidden"

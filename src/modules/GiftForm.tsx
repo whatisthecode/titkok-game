@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Loading } from '../components/Loading';
 import { updateUser } from '../services/apiClient';
-import { useUser } from '../contexts';
+import { GameContext, useUser } from '../contexts';
 import { Step } from '../types/type';
 import WatermelonIcon from '../assets/watermelon.svg';
 import BluePipe from '../assets/blue-pipe.svg';
@@ -28,16 +28,19 @@ const GiftForm = ({
 } : {
   onSendInfo: () => void;
 }) => {
-  const { userData, setUserData } = useUser();
+  // const { userData, setUserData } = useUser();
+  const gameData = useContext(GameContext);
+
+  const userData = gameData.userInfo;
 
   const [form, setForm] = useState<Form>({
     fullName:
       userData?.firstName && userData?.lastName ? `${userData.firstName} ${userData.lastName}` : '',
-    phone: '',
-    address: '',
+    phone: userData?.phone,
+    address: userData?.address,
     email: userData?.email || '',
     company: userData?.company || '',
-    title: '',
+    title: userData?.title,
   });
   const [errors, setErrors] = useState<Partial<Form>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,13 +74,15 @@ const GiftForm = ({
       ...userData,
       ...form,
       isRewarded: true,
+      isPlayed: true,
+      giftId: gameData.result[gameData.current - 1] + 1 - 9
     })
       .then(data => {
         if (!data) {
           setIsSubmitting(false);
           return;
         }
-        setUserData(data);
+        // setUserData(data);
         setIsSubmitting(false);
         onSendInfo && onSendInfo();
         // setStep('letter');

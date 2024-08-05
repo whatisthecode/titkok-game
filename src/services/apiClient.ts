@@ -40,4 +40,14 @@ const getUser = async (email: string) => {
   }
 };
 
-export { registerUser, updateUser, getUser };
+const getGift = async () => {
+  try {
+    const response = await apiClient.get(`/gift`);
+    return response.data.giftId;
+  } catch (error) {
+    console.error('Error getting user:', error);
+    throw error;
+  }
+}
+
+export { registerUser, updateUser, getUser, getGift };
