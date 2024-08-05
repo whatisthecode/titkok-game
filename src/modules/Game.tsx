@@ -298,7 +298,7 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
     direction: 'right',
     step: 5,
     shakeCount: 0,
-    maxShake: 100,
+    maxShake: 40,
   });
 
   const update = () => {
@@ -320,9 +320,16 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
 
     if (currentConfig.shakeCount == currentConfig.maxShake + 1) {
       currentConfig.x = currentConfig.minX + 10;
-      currentConfig.shakeCount = 0;
-      shake(false);
-      onShakeEnd && onShakeEnd();
+      currentConfig.shakeCount += 1;
+      updateUser({
+        ...gameData.userInfo,
+        isPlayed: true
+      }).then(() => {
+        currentConfig.shakeCount = 0;
+        setConfig(currentConfig);
+        shake(false);
+        onShakeEnd && onShakeEnd();
+      });
     }
 
     setConfig(currentConfig);
@@ -389,23 +396,13 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
     }
   }, [shaking])
 
-  // console.log(getWishingResult());
+  console.log(getWishingResult());
 
   return <>
     <Layer imageSmoothingEnabled onTap={() => {
-      updateUser({
-        ...gameData.userInfo,
-        isPlayed: true
-      }).then(() => {
-        shake(true);
-      })
+      shake(true);
     }} onClick={() => {
-      updateUser({
-        ...gameData.userInfo,
-        isPlayed: true
-      }).then(() => {
-        shake(true);
-      })
+      shake(true);
     }}>
       <Image image={imageBack} x={config.x} y={topY} width={width} height={upperHeight} />
       <Image image={imageStick} x={config.x + 10} y={stickY} width={stickWidth} height={stickHeight} />
@@ -1024,11 +1021,24 @@ function ActionGroup({
         h={buttonHeight}
         src="/assets/tiktok-game/xin-que.desk.png"
         onClick={() => {
-          dispatch({
-            ...gameData,
-            step: isRegistered ? 2 : 4,
-            type: 'UPDATE',
-          });
+          const isRegistered = !!Cookies.get("tethut2025email");
+          if(isRegistered) {
+            !gameData.userInfo && getUser(Cookies.get("tethut2025email") as string).then((data) => {
+              dispatch({
+                ...gameData,
+                type: "UPDATE",
+                userInfo: data,
+                step: isRegistered ? 2 : 4,
+              })
+            })
+          }
+          else {
+            dispatch({
+              ...gameData,
+              step: isRegistered ? 2 : 4,
+              type: 'UPDATE',
+            });
+          }
         }}
       />
     </>

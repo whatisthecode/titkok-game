@@ -38,24 +38,26 @@ const GiftForm = ({
     company: userData?.company || '',
     title: '',
   });
-  const [errors, setErrors] = useState<Form>({
-    fullName: '',
-    phone: '',
-    address: '',
-    email: '',
-    company: '',
-    title: '',
-  });
+  const [errors, setErrors] = useState<Partial<Form>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
     const newErrors = { ...errors };
     if (!form.address) newErrors.address = '* Vui lòng điền địa chỉ nhà';
+    else delete newErrors.address;
     if (!form.email) newErrors.email = '* Vui lòng điền Email';
+    else delete newErrors.email;
     if (!form.company) newErrors.company = '* Vui lòng điền đơn vị công tác';
+    else delete newErrors.company;
     if (!form.title) newErrors.title = '* Vui lòng điền chức vụ';
+    else delete newErrors.title;
     if (!form.fullName) newErrors.fullName = '* Vui lòng điền họ tên';
+    else delete newErrors.fullName;
     if (!form.phone) newErrors.phone = '* Vui lòng điền số điện thoại';
+    else delete newErrors.phone;
+
+    console.log(newErrors);
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
