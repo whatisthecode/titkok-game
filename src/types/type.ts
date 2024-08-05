@@ -42,6 +42,7 @@ export interface GameConfig {
   buttonHeight: number;
   phoneWidth: number;
   giftBoxWidth: number;
+  giftWidth: number;
   pathY: number;
 }
 

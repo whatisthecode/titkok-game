@@ -4,6 +4,7 @@ import { registerUser } from '../services/apiClient';
 import { useUser } from '../contexts';
 import { Loading } from '../components/Loading';
 import './Register.css';
+import { validateEmail } from '../util';
 // import { Step } from '../types/type';
 
 // type Props = {
@@ -37,9 +38,14 @@ const NewRegisterForm = () => {
   const validateForm = () => {
     const newErrors = { ...errors };
     if (!form.firstName) newErrors.firstName = '* Vui lòng điền Họ';
+    else delete newErrors.firstName; 
     if (!form.email) newErrors.email = '* Vui lòng điền Email';
+    else if (!validateEmail(form.email)) newErrors.email = "* Email không hợp lệ";
+    else delete newErrors.email; 
     if (!form.company) newErrors.company = '* Vui lòng điền đơn vị công tác';
+    else delete newErrors.company; 
     if (!form.lastName) newErrors.lastName = '* Vui lòng điền Tên';
+    else delete newErrors.lastName; 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

@@ -60,9 +60,10 @@ SIZES.set("<=320", {
   titleBannerHeight: 110,
   ruleBannerHeight: 150,
   resultStickWidth: 70,
-  buttonHeight: 32,
+  buttonHeight: 24,
   phoneWidth: 100,
   giftBoxWidth: 100,
+  giftWidth: 100,
   pathY: 100,
   stuffWidths: [50, 50, 50, 40, 40, 40, 40, 50, 40],
   fireworks: [30, 60, 90],
@@ -99,8 +100,9 @@ SIZES.set("<=375", {
   }, {
     x: 0, y: 0, w: 0, h: 0
   }],
+  giftWidth: 100,
   resultStickWidth: 80,
-  buttonHeight: 40,
+  buttonHeight: 24,
   phoneWidth: 100,
   giftBoxWidth: 100,
   pathY: 50
@@ -115,6 +117,7 @@ SIZES.set("<=525", {
     lineHeight: 20,
     style: "normal"
   },
+  giftWidth: 120,
   titleBannerHeight: 120,
   ruleBannerHeight: 180,
   stuffWidths: [100, 100, 100, 100, 60, 100, 60, 100, 100],
@@ -129,7 +132,7 @@ SIZES.set("<=525", {
     x: 0, y: 0, w: 0, h: 0
   }],
   resultStickWidth: 90,
-  buttonHeight: 40,
+  buttonHeight: 32,
   phoneWidth: 120,
   giftBoxWidth: 120,
   pathY: 50
@@ -144,6 +147,7 @@ SIZES.set("<=768", {
     lineHeight: 20,
     style: "normal"
   },
+  giftWidth: 160,
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
   stuffWidths: [120, 120, 120, 100, 70, 100, 70, 120, 100],
@@ -158,7 +162,7 @@ SIZES.set("<=768", {
     x: 0, y: 0, w: 0, h: 0
   }],
   resultStickWidth: 100,
-  buttonHeight: 40,
+  buttonHeight: 32,
   phoneWidth: 200,
   giftBoxWidth: 300,
   pathY: 100
@@ -178,6 +182,7 @@ SIZES.set("<=1366", {
   stuffWidths: [180, 180, 180, 120, 90, 120, 90, 180, 120],
   fireworks: [50, 100, 140],
   flowers: [],
+  giftWidth: 240,
   resultStickWidth: 100,
   buttonHeight: 40,
   phoneWidth: 180,
@@ -194,6 +199,7 @@ SIZES.set("<=1440", {
     lineHeight: 24,
     style: "normal"
   },
+  giftWidth: 300,
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
   stuffWidths: [200, 200, 200, 140, 90, 140, 90, 200, 140],
@@ -215,6 +221,7 @@ SIZES.set("<=1720", {
     lineHeight: 24,
     style: "normal"
   },
+  giftWidth: 300,
   titleBannerHeight: 160,
   ruleBannerHeight: 240,
   stuffWidths: [260, 260, 260, 160, 100, 160, 100, 260, 160],
@@ -236,6 +243,7 @@ SIZES.set(">1720", {
     lineHeight: 24,
     style: "normal"
   },
+  giftWidth: 300,
   titleBannerHeight: 160,
   ruleBannerHeight: 280,
   stuffWidths: [300, 300, 300, 160, 100, 160, 100, 300, 160],
@@ -292,6 +300,7 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
 
   const [config, setConfig] = useState({
     x: x,
+  giftWidth: 100,
     y: frontY,
     minX: x - 10,
     maxX: x + 10,
@@ -807,6 +816,13 @@ function StickResult({
 
   const text2Width = Math.min(screen.width - 16, 800);
 
+  const uwidth = gameData.giftBoxWidth + 2;
+  const uheight = uwidth * BOX_UPPER[1] / BOX_UPPER[0];
+
+
+  const ly = screen.height / 2;
+  const uy = ly + uheight;
+
   return (
     <>
       {!isSpecial || !display ? <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
@@ -828,7 +844,7 @@ function StickResult({
             onClick={onDropInfo}
             image={buttonImage}
             x={screen.width / 2 - buttonWidth / 2}
-            y={screen.height - buttonHeight * 3 / 2}
+            y={uy}
             width={buttonWidth}
             height={buttonHeight}
           >
@@ -866,15 +882,18 @@ function GiftBox({
   const ly = screen.height / 2;
   const uy = ly - uheight / 20;
 
-  const [gift, setGift] = useState({
-    width: 100,
-    x: screen.width / 2 - 50,
-    y: screen.height / 2 - 2 * 100 / 3
-  })
-
-  const giftWitdh = 100;
+  const giftWitdh = gameData.giftWidth;
   const giftX = screen.width / 2 - giftWitdh / 2;
   const giftY = screen.height / 2 - 2 * giftWitdh / 3;
+
+  const [gift, setGift] = useState({
+    width: giftWitdh,
+    maxWidth: giftWitdh * 2,
+    x: screen.width / 2 - giftWitdh / 2,
+    y: screen.height / 2 - 2 * giftWitdh / 3
+  })
+
+  console.log(gift);
 
   const [config, setConfig] = useState({
     x: ux,
@@ -885,11 +904,11 @@ function GiftBox({
   const update = () => {
     const newConfig = { ...config };
     newConfig.r += 1;
-    newConfig.y -= 15;
-    newConfig.x += 10;
+    newConfig.y -= giftWitdh * 1.25 / 17;
+    newConfig.x += giftWitdh * 1.25 / 17;
     setConfig(newConfig);
     const newGift = { ...gift };
-    newGift.width += 25;
+    newGift.width += newGift.width / 17;
     newGift.x = screen.width / 2 - newGift.width / 2;
     newGift.y = screen.height / 2 - 2 * newGift.width / 3 + newGift.width / 6;
     setGift(newGift);
@@ -1023,14 +1042,24 @@ function ActionGroup({
         onClick={() => {
           const isRegistered = !!Cookies.get("tethut2025email");
           if(isRegistered) {
-            !gameData.userInfo && getUser(Cookies.get("tethut2025email") as string).then((data) => {
+            if(!gameData.userInfo){
+
+              getUser(Cookies.get("tethut2025email") as string).then((data) => {
+                dispatch({
+                  ...gameData,
+                  type: "UPDATE",
+                  userInfo: data,
+                  step: isRegistered ? 2 : 4,
+                })
+              })
+            }
+            else {
               dispatch({
                 ...gameData,
                 type: "UPDATE",
-                userInfo: data,
                 step: isRegistered ? 2 : 4,
               })
-            })
+            }
           }
           else {
             dispatch({

@@ -8,6 +8,7 @@ import BluePipe from '../assets/blue-pipe.svg';
 import YellowFirework from '../assets/yellow-firework.svg';
 
 import './GiftForm.css';
+import { validateEmail } from '../util';
 
 type Props = {
   setStep: (step: Step) => void;
@@ -46,6 +47,7 @@ const GiftForm = ({
     if (!form.address) newErrors.address = '* Vui lòng điền địa chỉ nhà';
     else delete newErrors.address;
     if (!form.email) newErrors.email = '* Vui lòng điền Email';
+    else if (!validateEmail(form.email)) newErrors.email = "* Email không hợp lệ";
     else delete newErrors.email;
     if (!form.company) newErrors.company = '* Vui lòng điền đơn vị công tác';
     else delete newErrors.company;

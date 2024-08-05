@@ -14,8 +14,16 @@ export const LIST_RESULT = [
     { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "" }
 ];
 
+export const validateEmail = (email: string) => {
+    return String(email)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+};
+
 export function random(min: number, max: number) {
-    return Math.floor(Math.random() * max) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 export function getPlayTimes() {
@@ -23,7 +31,7 @@ export function getPlayTimes() {
 }
 
 export function getWishingResult() {
-    return random(0, LIST_RESULT.length);
+    return random(9, LIST_RESULT.length);
 }
 
 export function generateDefaultResult(playCount: number) {
