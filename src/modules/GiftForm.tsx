@@ -7,6 +7,8 @@ import WatermelonIcon from '../assets/watermelon.svg';
 import BluePipe from '../assets/blue-pipe.svg';
 import YellowFirework from '../assets/yellow-firework.svg';
 
+import './GiftForm.css';
+
 type Props = {
   setStep: (step: Step) => void;
 };
@@ -20,7 +22,11 @@ type Form = {
   title: string;
 };
 
-const GiftForm = ({ setStep }: Props) => {
+const GiftForm = ({
+  onSendInfo
+} : {
+  onSendInfo: () => void;
+}) => {
   const { userData, setUserData } = useUser();
 
   const [form, setForm] = useState<Form>({
@@ -69,7 +75,8 @@ const GiftForm = ({ setStep }: Props) => {
         }
         setUserData(data);
         setIsSubmitting(false);
-        setStep('letter');
+        onSendInfo && onSendInfo();
+        // setStep('letter');
       })
       .catch(error => {
         console.error('Đã có lỗi xảy ra. Vui lòng thử lại', error);

@@ -1,12 +1,14 @@
 import { Stage, Layer, Image, Rect, Text } from 'react-konva';
 import useImage from 'use-image';
-
+import Cookies from 'js-cookie';
 import './Game.css';
 import { Children, FunctionComponent, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { GameConfig, GameData, Layout, Step, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
 import { LIST_RESULT, generateDefaultResult, getPlayTimes, getWishingResult } from '../util';
+import GiftForm from './GiftForm';
+import { getUser, updateUser } from '../services/apiClient';
 
 // type Props = {
 //   setStep: (step: Step) => void;
@@ -27,6 +29,7 @@ const STUFFS = [
 const NAME_LOGO = [702, 185];
 const TITLE_BANNERS = [3974, 1459];
 const RULE_BANNERS = [2348, 1175];
+const LAST_BANNERS = [3974, 1622];
 const BUTTON = [327, 80];
 const LARGE_BUTTON = [392, 104];
 const CUP = [911, 1096];
@@ -389,9 +392,18 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
 
   return <>
     <Layer imageSmoothingEnabled onTap={() => {
-      shake(true);
+      updateUser({
+        ...gameData.userInfo,
+        isPlayed: true
+      }).then(() => {
+      })
     }} onClick={() => {
-      shake(true);
+      updateUser({
+        ...gameData.userInfo,
+        isPlayed: true
+      }).then(() => {
+        shake(true);
+      })
     }}>
       <Image image={imageBack} x={config.x} y={topY} width={width} height={upperHeight} />
       <Image image={imageStick} x={config.x + 10} y={stickY} width={stickWidth} height={stickHeight} />
@@ -630,6 +642,68 @@ function RuleBanner({ onBack }: { onBack: () => void }) {
   );
 }
 
+function RemindBanner({ onBack }: { onBack: () => void }) {
+  // const ratio = 3479 / 1459;
+  const gameData = useContext(GameContext);
+  const height = gameData.ruleBannerHeight;
+  const width = (height * RULE_BANNERS[0]) / RULE_BANNERS[1];
+  const [image] = useImage('/assets/tiktok-game/full-step.mobile.png');
+  const screen = gameData.screen;
+  const buttonHeight = gameData.buttonHeight;
+  const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
+
+  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
+    gameData.layout as Layout,
+    gameData.screen
+  );
+  const { height: phoneHeight } = getPhoneSize(gameData);
+
+  const pathY = pathHeight - rawPathHeight;
+
+  const x = screen.width / 2 - width / 2;
+  const buttonX = screen.width / 2 - buttonWidth / 2;
+  const y = screen.height - (rawPathHeight / 4 + phoneHeight + height) + pathY / 4;
+
+  return (
+    <>
+      <Image image={image} x={x} y={y} width={width} height={height} />
+      <Button
+        src={'/assets/tiktok-game/back-button.desk.png'}
+        x={buttonX}
+        y={y + height - buttonHeight}
+        w={buttonWidth}
+        h={buttonHeight}
+        onClick={onBack}
+      />
+    </>
+  );
+}
+
+function LastBanner({}) {
+  const gameData = useContext(GameContext);
+  const height = gameData.ruleBannerHeight;
+  const width = (height * LAST_BANNERS[0]) / LAST_BANNERS[1];
+  const [image] = useImage('/assets/tiktok-game/last-banner.desk.png');
+  const screen = gameData.screen;
+
+  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
+    gameData.layout as Layout,
+    gameData.screen
+  );
+  const { height: phoneHeight } = getPhoneSize(gameData);
+
+  const pathY = pathHeight - rawPathHeight;
+
+  const x = screen.width / 2 - width / 2;
+  const y = screen.height - (rawPathHeight / 4 + phoneHeight + height) + pathY / 4;
+
+  return (
+    <>
+      <Image image={image} x={x} y={y} width={width} height={height} />
+    </>
+  );
+}
+
 function Mask() {
   const [config, setConfig] = useState({
     x: 0,
@@ -656,9 +730,11 @@ function Mask() {
 }
 
 function StickResult({
-  onBack
+  onBack,
+  onDropInfo
 }: {
   onBack: () => void;
+  onDropInfo: () => void;
 }) {
   const gameData = useContext(GameContext)
   const result = gameData.result;
@@ -673,6 +749,7 @@ function StickResult({
   const [buttonImage] = useImage(isSpecial ? "/assets/tiktok-game/tha-nhe-thong-tin.desk.png" : "/assets/tiktok-game/back-button.desk.png");
   const [show, showResult] = useState(false);
   const [display, displayResult] = useState(false);
+  const [showDropInfoButonn, setShowDropInfoButton] = useState(false);
   const width = gameData.resultStickWidth;
   const height = width * 1586 / 215;
   const screen = gameData.screen;
@@ -741,22 +818,37 @@ function StickResult({
         <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height / 2 + yLines[3] + 40} width={buttonWidth} height={gameData.buttonHeight}></Image>
       </> : null}
       {(isSpecial && display) ? <>
-        <GiftBox />
-        <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height - buttonHeight * 3 / 2} width={buttonWidth} height={buttonHeight}></Image>
+        <GiftBox onAnimateEnd={() => {setShowDropInfoButton(true)}}/>
+        {showDropInfoButonn ? (
+          <Image 
+            onTap={onDropInfo}
+            onClick={onDropInfo}
+            image={buttonImage}
+            x={screen.width / 2 - buttonWidth / 2}
+            y={screen.height - buttonHeight * 3 / 2}
+            width={buttonWidth}
+            height={buttonHeight}
+          >
+          </Image>
+        ): null}
       </> : null}
     </>
   )
 }
 
 
-function GiftBox() {
+function GiftBox({
+  onAnimateEnd
+} : {
+  onAnimateEnd: () => void
+}) {
   const gameData = useContext(GameContext);
   const current = gameData.current;
   const result = gameData.result;
   const [upperImage] = useImage("/assets/tiktok-game/box-upper.desk.png");
   const [lowerImage] = useImage("/assets/tiktok-game/box-lower.desk.png");
-  const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${result[current] + 1}.desk.png`);
-  const [showGift, setShowGift] = useState(false);
+  const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${result[current] + 1 - 9}.desk.png`);
+  const [showGift, setShowGift] = useState(true);
 
   const screen = gameData.screen;
   const lwidth = gameData.giftBoxWidth;
@@ -806,6 +898,7 @@ function GiftBox() {
         window.requestAnimationFrame(update);
       }, 1000 / 30);
     }
+    else onAnimateEnd && onAnimateEnd()
   }, [config, showGift]);
 
   return <>
@@ -836,7 +929,13 @@ function Button({
   );
 }
 
-function Result({ onBack }: { onBack: () => void }) {
+function Result({ 
+  onBack,
+  onDropInfo
+}: { 
+  onBack: () => void,
+  onDropInfo: () => void
+}) {
   const [config, setConfig] = useState({
     x: 0,
     w: window.innerWidth,
@@ -867,12 +966,16 @@ function Result({ onBack }: { onBack: () => void }) {
         width={config.w}
         height={window.innerHeight}
       />
-      <StickResult onBack={onBack} />
+      <StickResult onBack={onBack} onDropInfo={onDropInfo}/>
     </Layer>
   );
 }
 
-function ActionGroup() {
+function ActionGroup({
+  isRegistered
+} : {
+  isRegistered: boolean
+}) {
   const gameData = useContext(GameContext);
   const dispatch = useContext(GameDispatchContext);
 
@@ -917,7 +1020,7 @@ function ActionGroup() {
         onClick={() => {
           dispatch({
             ...gameData,
-            step: 2,
+            step: isRegistered ? 2 : 4,
             type: 'UPDATE',
           });
         }}
@@ -985,7 +1088,23 @@ const Provider: FunctionComponent<{
         bWidth: 1920,
         bHeight: 1080,
       },
+      userInfo: null
     });
+
+    const isRegistered = !!Cookies.get("tethut2025email");
+  
+    useEffect(() => {
+      if(isRegistered) {
+        !gameData.userInfo && getUser(Cookies.get("tethut2025email") as string).then((data) => {
+          dispatch({
+            ...gameData,
+            type: "UPDATE",
+            userInfo: data,
+            step: data && data.isPlayed ? 3 : 0
+          })
+        })
+      }
+    }, [isRegistered]);
 
     return (<GameContext.Provider value={gameData}>
       <GameDispatchContext.Provider value={dispatch}>
@@ -994,11 +1113,23 @@ const Provider: FunctionComponent<{
     </GameContext.Provider>)
   }
 
-function GameInner() {
+function GameInner({
+  isRegistered,
+} : {
+  isRegistered: boolean,
+}) {
   const dispatch = useContext(GameDispatchContext);
   const gameData = useContext(GameContext);
   const [showResult, setShowResut] = useState(false);
+  const [showDropInfo, setShowDropInfo] = useState(false);
   const screen = gameData.screen;
+
+  const userInfo = gameData && gameData.userInfo
+  
+  const isLoading = isRegistered && !userInfo;
+  const isPlayed = userInfo && userInfo.isPlayed;
+
+  console.log("isPlayed", isPlayed);
 
   const cupWidth = gameData.phoneWidth;
   const cupHeight = (cupWidth * 1096) / 911;
@@ -1122,15 +1253,16 @@ function GameInner() {
       h: fireworkWidths[2],
     },
   ];
-
+  console.log("currentStep", gameData);
   return (
     <div
       className="w-full min-h-dvh justify-end flex flex-col relative overflow-x-hidden"
       onClick={() => { }}
     >
+      {isLoading ? <div className="w-dvw h-dvh absolute top-0 left-0 z-30 bg-[#00000050]"></div> : null}
       <Stage width={screen.width} height={screen.height}>
         <Layer id="background" imageSmoothingEnabled>
-          {currentStep === 0 || currentStep === 1 ? <Phone /> : null}
+          {currentStep === 0 || currentStep === 1  || currentStep === 3 || currentStep === 4? <Phone /> : null}
           <Path />
           <Stuff
             src="/assets/tiktok-game/stuff-1.desk.png"
@@ -1224,6 +1356,7 @@ function GameInner() {
         </Layer>
         <Layer imageSmoothingEnabled>
           <TiktokLogo />
+          {currentStep === 3 ? <LastBanner /> : null}
           {currentStep === 0 || currentStep == 2 ? <TitleBanner /> : null}
           {currentStep === 1 ? (
             <RuleBanner
@@ -1236,7 +1369,18 @@ function GameInner() {
               }}
             />
           ) : null}
-          {currentStep === 0 ? <ActionGroup /> : null}
+          {currentStep === 4 ? (
+            <RemindBanner
+              onBack={() => {
+                dispatch({
+                  ...gameData,
+                  step: 0,
+                  type: 'UPDATE',
+                });
+              }}
+            />
+          ) : null}
+          {currentStep === 0 ? <ActionGroup isRegistered={isRegistered}/> : null}
           <NameLogo />
           {/* <Mask /> */}
         </Layer>
@@ -1248,23 +1392,41 @@ function GameInner() {
           />
         ) : null}
       </Stage>
-      {showResult ? (
+      {(showResult && !showDropInfo) ? (
         <div className="absolute top-0 left-0 w-full h-full z-10">
           <Stage width={window.innerWidth} height={window.innerHeight}>
-            <Result onBack={() => setShowResut(false)} />
+            <Result onBack={() => {
+              setShowResut(false);
+              dispatch({
+                ...gameData,
+                type: "UPDATE",
+                step: 3
+              })
+            }}  onDropInfo={() => {
+              setShowResut(false);
+              setShowDropInfo(true);
+            }}/>
           </Stage>
         </div>
       ) : null}
+      {showDropInfo ? <GiftForm onSendInfo={() => {
+        setShowDropInfo(false);
+        dispatch({
+          ...gameData,
+          type: "UPDATE",
+          step: 3
+        })
+      }} /> : null}
     </div>
   )
 }
 
 function Game() {
-  return (
-    <Provider>
-      <GameInner />
-    </Provider>
-  );
+  const isRegistered = !!Cookies.get("tethut2025email");
+
+  return <Provider>
+    <GameInner isRegistered={isRegistered}/>
+  </Provider>
 }
 
 export default Game;

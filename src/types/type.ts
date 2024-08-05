@@ -60,6 +60,7 @@ export interface GameData extends GameConfig {
   current: number;
   playCount: number;
   result: number[];
+  userInfo: any;
 }
 
 export type Layout = 'mobile' | 'desktop';
