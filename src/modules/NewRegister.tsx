@@ -53,7 +53,9 @@ const NewRegisterForm = () => {
         }
         setUserData(data);
         setIsSubmitting(false);
-        Cookies.set('tethut2025email', convertToBase64(form.email), { expires: 365 });
+        Cookies.set('tethut2025email', convertToBase64(form.email), {
+          expires: 10,
+        });
       })
       .catch(error => {
         console.error('Đã có lỗi xảy ra. Vui lòng thử lại', error);
