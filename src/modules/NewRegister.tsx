@@ -33,7 +33,7 @@ const NewRegisterForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isSuccess, setIsSuccess] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const validateForm = () => {
     const newErrors = { ...errors };
