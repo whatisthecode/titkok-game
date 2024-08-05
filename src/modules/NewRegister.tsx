@@ -58,6 +58,8 @@ const NewRegisterForm = () => {
         setIsSuccess(true);
         Cookies.set('tethut2025email', convertToBase64(form.email), {
           expires: 10,
+          sameSite: "None",
+          secure: true
         });
       })
       .catch(error => {
