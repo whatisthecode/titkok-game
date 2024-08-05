@@ -1,3 +1,3 @@
-const API_ENDPOINT = 'http://194.238.17.248';
+const API_ENDPOINT = 'https://codingatcafe.tech';
 
 export { API_ENDPOINT };

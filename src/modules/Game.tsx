@@ -30,6 +30,7 @@ const NAME_LOGO = [702, 185];
 const TITLE_BANNERS = [3974, 1459];
 const RULE_BANNERS = [2348, 1175];
 const LAST_BANNERS = [3974, 1622];
+const NOT_REGISTERED_BANNERS = [2986, 1104];
 const BUTTON = [327, 80];
 const LARGE_BUTTON = [392, 104];
 const CUP = [911, 1096];
@@ -58,7 +59,7 @@ SIZES.set("<=320", {
   },
   titleBannerHeight: 110,
   ruleBannerHeight: 150,
-  resultStickWidth: 30,
+  resultStickWidth: 70,
   buttonHeight: 32,
   phoneWidth: 100,
   giftBoxWidth: 100,
@@ -98,7 +99,7 @@ SIZES.set("<=375", {
   }, {
     x: 0, y: 0, w: 0, h: 0
   }],
-  resultStickWidth: 40,
+  resultStickWidth: 80,
   buttonHeight: 40,
   phoneWidth: 100,
   giftBoxWidth: 100,
@@ -127,7 +128,7 @@ SIZES.set("<=525", {
   }, {
     x: 0, y: 0, w: 0, h: 0
   }],
-  resultStickWidth: 40,
+  resultStickWidth: 90,
   buttonHeight: 40,
   phoneWidth: 120,
   giftBoxWidth: 120,
@@ -156,7 +157,7 @@ SIZES.set("<=768", {
   }, {
     x: 0, y: 0, w: 0, h: 0
   }],
-  resultStickWidth: 40,
+  resultStickWidth: 100,
   buttonHeight: 40,
   phoneWidth: 200,
   giftBoxWidth: 300,
@@ -177,7 +178,7 @@ SIZES.set("<=1366", {
   stuffWidths: [180, 180, 180, 120, 90, 120, 90, 180, 120],
   fireworks: [50, 100, 140],
   flowers: [],
-  resultStickWidth: 40,
+  resultStickWidth: 100,
   buttonHeight: 40,
   phoneWidth: 180,
   giftBoxWidth: 500,
@@ -198,7 +199,7 @@ SIZES.set("<=1440", {
   stuffWidths: [200, 200, 200, 140, 90, 140, 90, 200, 140],
   fireworks: [50, 100, 140],
   flowers: [],
-  resultStickWidth: 50,
+  resultStickWidth: 110,
   buttonHeight: 48,
   phoneWidth: 200,
   giftBoxWidth: 300,
@@ -219,7 +220,7 @@ SIZES.set("<=1720", {
   stuffWidths: [260, 260, 260, 160, 100, 160, 100, 260, 160],
   fireworks: [50, 100, 140],
   flowers: [],
-  resultStickWidth: 50,
+  resultStickWidth: 110,
   buttonHeight: 48,
   phoneWidth: 200,
   giftBoxWidth: 300,
@@ -240,7 +241,7 @@ SIZES.set(">1720", {
   stuffWidths: [300, 300, 300, 160, 100, 160, 100, 300, 160],
   fireworks: [50, 100, 140],
   flowers: [],
-  resultStickWidth: 50,
+  resultStickWidth: 110,
   buttonHeight: 48,
   phoneWidth: 200,
   giftBoxWidth: 400,
@@ -396,6 +397,7 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
         ...gameData.userInfo,
         isPlayed: true
       }).then(() => {
+        shake(true);
       })
     }} onClick={() => {
       updateUser({
@@ -645,9 +647,9 @@ function RuleBanner({ onBack }: { onBack: () => void }) {
 function RemindBanner({ onBack }: { onBack: () => void }) {
   // const ratio = 3479 / 1459;
   const gameData = useContext(GameContext);
-  const height = gameData.ruleBannerHeight;
-  const width = (height * RULE_BANNERS[0]) / RULE_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/full-step.mobile.png');
+  const height = gameData.titleBannerHeight;
+  const width = (height * NOT_REGISTERED_BANNERS[0]) / NOT_REGISTERED_BANNERS[1];
+  const [image] = useImage('/assets/tiktok-game/not-registered-banner.desk.png');
   const screen = gameData.screen;
   const buttonHeight = gameData.buttonHeight;
   const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
@@ -681,7 +683,7 @@ function RemindBanner({ onBack }: { onBack: () => void }) {
 
 function LastBanner({}) {
   const gameData = useContext(GameContext);
-  const height = gameData.ruleBannerHeight;
+  const height = gameData.titleBannerHeight;
   const width = (height * LAST_BANNERS[0]) / LAST_BANNERS[1];
   const [image] = useImage('/assets/tiktok-game/last-banner.desk.png');
   const screen = gameData.screen;
@@ -738,11 +740,11 @@ function StickResult({
 }) {
   const gameData = useContext(GameContext)
   const result = gameData.result;
-  const current = gameData.current - 1;
+  const current = gameData.current - 1 === -1 ? gameData.current : gameData.current - 1 ;
   // const playCount = gameData.playCount;
   console.log(current, result);
 
-  const dataResult = LIST_RESULT[result[current === -1 ? 0 : current]];
+  const dataResult = LIST_RESULT[result[current]];
   const isSpecial = dataResult.type === "gift";
 
   const [image] = useImage(dataResult.image);
@@ -751,7 +753,7 @@ function StickResult({
   const [display, displayResult] = useState(false);
   const [showDropInfoButonn, setShowDropInfoButton] = useState(false);
   const width = gameData.resultStickWidth;
-  const height = width * 1586 / 215;
+  const height = width * 1762 / 641;
   const screen = gameData.screen;
 
   const [config, setConfig] = useState({
@@ -803,6 +805,8 @@ function StickResult({
   const buttonWidth = (isSpecial ? (LARGE_BUTTON[0] / LARGE_BUTTON[1]) : (BUTTON[0] / BUTTON[1])) * buttonHeight;
 
   const fullType = "Hút " + dataResult.type;
+
+  console.log(result, current);
 
   return (
     <>
@@ -1100,7 +1104,7 @@ const Provider: FunctionComponent<{
             ...gameData,
             type: "UPDATE",
             userInfo: data,
-            step: data && data.isPlayed ? 3 : 0
+            // step: data && data.isPlayed ? 3 : 0
           })
         })
       }

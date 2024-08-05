@@ -1,5 +1,5 @@
 export const LIST_RESULT = [
-    { image: "/assets/tiktok-game/wishing-stick-without-bling.desk.png", type: "hạnh phúc", text1: "Hạnh phúc hút tới quanh ta", text2: "TikTok vui vẻ, bao la tiếng cười" },
+    { image: "/assets/tiktok-game/que-so-1.desk.png", type: "hạnh phúc", text1: "Hạnh phúc hút tới quanh ta", text2: "TikTok vui vẻ, bao la tiếng cười" },
     { image: "/assets/tiktok-game/que-so-2.desk.png", type: "may mắn", text1: "May mắn hút đến không ngờ", text2: "TikTok cơ hội, giấc mơ thành hình" },
     { image: "/assets/tiktok-game/que-so-3.desk.png", type: "tình yêu", text1: "TikTok thêu dệt mộng mơ", text2: "Yêu thương sâu đậm, chẳng mờ phai nhanh" },
     { image: "/assets/tiktok-game/que-so-4.desk.png", type: "sự nghiệp", text1: "TikTok dẫn lối vinh quang", text2: "Thăng hoa sự nghiệp, muôn vàn niềm vui" },
