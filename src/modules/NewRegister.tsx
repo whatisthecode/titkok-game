@@ -43,10 +43,6 @@ const NewRegisterForm = () => {
   };
 
   const handleSubmit = async () => {
-    Cookies.set('tethut2025email', convertToBase64(form.email), {
-      expires: 365,
-      domain: 'https://first-game-6a2f1.web.app/',
-    });
     if (!validateForm()) return;
     setIsSubmitting(true);
     await registerUser(form)
@@ -57,6 +53,9 @@ const NewRegisterForm = () => {
         }
         setUserData(data);
         setIsSubmitting(false);
+        Cookies.set('tethut2025email', convertToBase64(form.email), {
+          expires: 10,
+        });
       })
       .catch(error => {
         console.error('Đã có lỗi xảy ra. Vui lòng thử lại', error);
