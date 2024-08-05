@@ -82,8 +82,8 @@ SIZES.set("<=375", {
   nameLogoHeight: 60,
   font: {
     family: "TikTokDisplayFont",
-    size: 16,
-    lineHeight: 20,
+    size: 12,
+    lineHeight: 18,
     style: "normal"
   },
   titleBannerHeight: 120,
@@ -799,7 +799,7 @@ function StickResult({
 
   const yLines = [0, lineHeightBase + fontBase / 2];
   yLines[2] = yLines[1] + lineHeightBase + (fontBase + 4) + fontBase;
-  yLines[3] = yLines[2] + lineHeightBase + (fontBase + 4) / 4;
+  yLines[3] = yLines[2] + 2 * lineHeightBase + (fontBase + 4) / 4;
 
   const buttonHeight = isSpecial ? gameData.buttonHeight * 2 : gameData.buttonHeight;
   const buttonWidth = (isSpecial ? (LARGE_BUTTON[0] / LARGE_BUTTON[1]) : (BUTTON[0] / BUTTON[1])) * buttonHeight;
@@ -808,18 +808,20 @@ function StickResult({
 
   console.log(result, current);
 
+  const text2Width = Math.min(screen.width - 16, 800);
+
   return (
     <>
       {!isSpecial || !display ? <Image image={image} x={config.x} y={config.y} width={width} height={height} rotation={config.rotation} onTap={() => showResult(true)} onClick={() => {
         showResult(true);
       }} /> : null}
       {(!isSpecial && display) ? <>
-        <Text text={`Quẻ săm số ${result[current] + 1}:`} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
+        <Text text={`Quẻ xăm số ${result[current] + 1}:`} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[0]} fontSize={fontBase} fontFamily="TikTokDisplayFont" />
         <Text text={"Hút"} fill={"#fff"} x={- (measureText(fullType) / 2) + measureText("Hut") / 2} width={screen.width} align="center" y={screen.height / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
         <Text text={dataResult.type} fill={"#fd0048"} x={- (measureText(fullType) / 2) + measureText(dataResult.type) / 2 + measureText("Hút ")} width={screen.width} align="center" y={screen.height / 2 + yLines[1]} fontSize={fontBase * 2} fontFamily="TikTokDisplayFont" fontStyle="bold" />
-        <Text text={dataResult.text1} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[2]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Text text={dataResult.text2} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[3]} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
-        <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height / 2 + yLines[3] + 40} width={buttonWidth} height={gameData.buttonHeight}></Image>
+        <Text text={dataResult.text1} fill={"#fff"} width={screen.width} align="center" y={screen.height / 2 + yLines[2]} fontSize={fontBase + 8} fontStyle="bold" fontFamily="TikTokDisplayFont" />
+        <Text text={dataResult.text2} fill={"#fff"} x={screen.width / 2 - text2Width / 2} width={text2Width} align="center" y={screen.height / 2 + yLines[3]} lineHeight={1.3125} fontSize={fontBase + 4} fontFamily="TikTokDisplayFont" />
+        <Image onTap={onBack} onClick={onBack} image={buttonImage} x={screen.width / 2 - buttonWidth / 2} y={screen.height / 2 + yLines[3] + 80 + (fontBase * 3.3125)} width={buttonWidth} height={gameData.buttonHeight}></Image>
       </> : null}
       {(isSpecial && display) ? <>
         <GiftBox onAnimateEnd={() => {setShowDropInfoButton(true)}}/>
