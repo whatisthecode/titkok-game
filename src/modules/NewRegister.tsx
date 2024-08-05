@@ -38,14 +38,14 @@ const NewRegisterForm = () => {
   const validateForm = () => {
     const newErrors = { ...errors };
     if (!form.firstName) newErrors.firstName = '* Vui lòng điền Họ';
-    else delete newErrors.firstName; 
+    else delete newErrors.firstName;
     if (!form.email) newErrors.email = '* Vui lòng điền Email';
-    else if (!validateEmail(form.email)) newErrors.email = "* Email không hợp lệ";
-    else delete newErrors.email; 
+    else if (!validateEmail(form.email)) newErrors.email = '* Email không hợp lệ';
+    else delete newErrors.email;
     if (!form.company) newErrors.company = '* Vui lòng điền đơn vị công tác';
-    else delete newErrors.company; 
+    else delete newErrors.company;
     if (!form.lastName) newErrors.lastName = '* Vui lòng điền Tên';
-    else delete newErrors.lastName; 
+    else delete newErrors.lastName;
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -84,7 +84,8 @@ const NewRegisterForm = () => {
               <div className="text-white text-2xl md:text-4xl lg:text-5xl font-bold flex flex-col justify-center gap-2 items-center">
                 <div>Đăng ký thành công</div>
                 <div className="text-center">
-                  Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ.
+                  Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ
+                  để có cơ hội nhận quà độc quyền từ TikTok
                 </div>
               </div>
             </div>
