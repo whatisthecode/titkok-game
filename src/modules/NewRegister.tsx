@@ -32,6 +32,8 @@ const NewRegisterForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [isSuccess, setIsSuccess] = useState(false);
+
   const validateForm = () => {
     const newErrors = { ...errors };
     if (!form.firstName) newErrors.firstName = '* Vui lòng điền Họ';
@@ -53,6 +55,7 @@ const NewRegisterForm = () => {
         }
         setUserData(data);
         setIsSubmitting(false);
+        setIsSuccess(true);
         Cookies.set('tethut2025email', convertToBase64(form.email), {
           expires: 10,
         });
@@ -65,50 +68,68 @@ const NewRegisterForm = () => {
 
   return (
     <div className="new-form-register">
-      <div className="my-8 w-full max-w-[calc(100%-32px)] sm:max-w-[600px] md:max-w-[728px] lg:max-w-[800px] border border-[#3BFFEF] rounded-lg	 bg-transparent rounded-b-3xl relative">
-        <div className="mt-8 p-4 md:px-8 md:py-8 flex flex-col gap-2 sm:gap-2 items-center">
-          <div className="w-full">
-            <input
-              placeholder="Họ *"
-              className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
-              onChange={e => setForm({ ...form, firstName: e.target.value })}
-            />
-            <p className="text-white text-xs ms-5 h-4 mt-1">{errors.firstName}</p>
+      {/* <div className="my-8 w-full max-w-[calc(100%-32px)] sm:max-w-[600px] md:max-w-[728px] lg:max-w-[800px] border border-[#3BFFEF] rounded-lg	 bg-transparent rounded-b-3xl relative"> */}
+      <div className="my-8 w-full border border-[#3BFFEF] rounded-l bg-transparent rounded-b-3xl relative">
+        {isSuccess ? (
+          <div className="h-[500px] flex justify-center	 items-center">
+            <div className="flex flex-col items-center justify-center gap-y-4">
+              <div className="text-white text-sm md:text-3xl lg:text-4xl ">
+                Đăng ký thành công. Bạn có thể tham gia chơi ngay bây giờ.
+              </div>
+              <a
+                href="#game-container"
+                className="max-w-fit min-w-[128px] p-2 text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-4 flex justify-center items-center outline-none hover:opacity-80"
+              >
+                Chơi ngay
+              </a>
+            </div>
           </div>
-          <div className="w-full">
-            <input
-              placeholder="Tên *"
-              className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
-              onChange={e => setForm({ ...form, lastName: e.target.value })}
-            />
-            <p className="text-white text-xs ms-5 h-4 mt-1">{errors.lastName}</p>
-          </div>
-          <div className="w-full">
-            <input
-              type="email"
-              placeholder="Địa chỉ email *"
-              className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
-              onChange={e => setForm({ ...form, email: e.target.value })}
-            />
-            <p className="text-white text-xs ms-5 h-4 mt-1">{errors.email}</p>
-          </div>
-          <div className="w-full">
-            <input
-              placeholder="Đơn vị công tác *"
-              className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
-              onChange={e => setForm({ ...form, company: e.target.value })}
-            />
-            <p className="text-white text-xs ms-5 h-4 mt-1">{errors.company}</p>
-          </div>
+        ) : (
+          <div className="mt-8 p-4 md:px-8 md:py-8 flex flex-col gap-2 sm:gap-2 items-center">
+            <div className="w-full">
+              <input
+                placeholder="Họ *"
+                className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                onChange={e => setForm({ ...form, firstName: e.target.value })}
+              />
+              <p className="text-white text-xs ms-5 h-4 mt-1">{errors.firstName}</p>
+            </div>
+            <div className="w-full">
+              <input
+                placeholder="Tên *"
+                className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                onChange={e => setForm({ ...form, lastName: e.target.value })}
+              />
+              <p className="text-white text-xs ms-5 h-4 mt-1">{errors.lastName}</p>
+            </div>
+            <div className="w-full">
+              <input
+                type="email"
+                placeholder="Địa chỉ email *"
+                className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                onChange={e => setForm({ ...form, email: e.target.value })}
+              />
+              <p className="text-white text-xs ms-5 h-4 mt-1">{errors.email}</p>
+            </div>
+            <div className="w-full">
+              <input
+                placeholder="Đơn vị công tác *"
+                className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                onChange={e => setForm({ ...form, company: e.target.value })}
+              />
+              <p className="text-white text-xs ms-5 h-4 mt-1">{errors.company}</p>
+            </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="max-w-fit min-w-[128px] p-2 text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-4 flex justify-center items-center outline-none hover:opacity-80"
-          >
-            {isSubmitting ? <Loading /> : 'Gửi thông tin'}
-          </button>
-        </div>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="max-w-fit min-w-[128px] p-2 text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-4 flex justify-center items-center outline-none hover:opacity-80"
+            >
+              {isSubmitting ? <Loading /> : 'Gửi thông tin'}
+            </button>
+          </div>
+        )}
+
         {/* <div className="absolute bottom-[-10%] right-[-18%] hidden md:block lg:block">
           <img src={PenIcon} alt="pen" className="w-100 mt-4" />
         </div>
