@@ -8,11 +8,13 @@ export const LIST_RESULT = [
     { image: "/assets/tiktok-game/que-so-7.desk.png", type: "kiến thức", text1: "Học hỏi không ngừng, tri thức rộng mở", text2: "Quẻ \"Hút Kiến Thức\" cho thấy năm nay bạn sẽ học hỏi và phát triển không ngừng. Khi bạn luôn tìm kiếm và hấp thụ kiến thức mới, bạn sẽ trở nên thông thái và tự tin hơn trong công việc và cuộc sống." },
     { image: "/assets/tiktok-game/que-so-8.desk.png", type: "gắn kết", text1: "Đoàn kết một lòng, thành công bền vững", text2: "Quẻ \"Hút Gắn Kết\" cho thấy tổ chức nơi bạn gắn bó sẽ có một môi trường làm việc đoàn kết và hợp tác. Khi bạn và đồng nghiệp làm việc cùng nhau một cách đoàn kết và hiệu quả, công việc sẽ tiến triển thuận lợi và thành công." },
     { image: "/assets/tiktok-game/que-so-9.desk.png", type: "cân bằng", text1: "Công việc và cuộc sống, cân bằng hạnh phúc", text2: "Quẻ \"Hút Cân Bằng\" cho thấy năm nay bạn sẽ hài hòa giữa công việc và cuộc sống cá nhân. Khi bạn đạt được sự cân bằng này, bạn sẽ có sức khỏe tốt, tinh thần thoải mái và hiệu suất công việc cao." },
-    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "" },
-    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "" },
-    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "" },
-    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "" }
+    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "1 chăn Tiktok" },
+    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "1 túi Tiktok" },
+    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "1 túi đeo Tiktok màu bất kỳ (đen/trắng)" },
+    { image: "/assets/tiktok-game/que-may-man.desk.png", type: "gift", text1: "", text2: "1 sổ Tiktok" },
 ];
+
+export const GIFT_IN_LIST = [9, 10, 11, 12];
 
 export const validateEmail = (email: string) => {
     return String(email)
@@ -30,8 +32,8 @@ export function getPlayTimes() {
     return Math.floor(random(1, 2));
 }
 
-export function getWishingResult() {
-    return random(9, LIST_RESULT.length);
+export function getWishingResult(from: number = 0, to: number = 0) {
+    return random(from || 0, to || LIST_RESULT.length);
 }
 
 export function generateDefaultResult(playCount: number) {
