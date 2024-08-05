@@ -58,8 +58,8 @@ const NewRegisterForm = () => {
         setIsSuccess(true);
         Cookies.set('tethut2025email', convertToBase64(form.email), {
           expires: 10,
+          sameSite: 'None',
           secure: true,
-          sameSite: "None"
         });
       })
       .catch(error => {
@@ -71,23 +71,17 @@ const NewRegisterForm = () => {
   return (
     <div className="new-form-register">
       {/* <div className="my-8 w-full max-w-[calc(100%-32px)] sm:max-w-[600px] md:max-w-[728px] lg:max-w-[800px] border border-[#3BFFEF] rounded-lg	 bg-transparent rounded-b-3xl relative"> */}
-      <div className="my-8 w-full border border-[#3BFFEF] rounded-l bg-transparent rounded-b-3xl relative">
+      <div className="my-8 w-full border border-[#3BFFEF] rounded-lg bg-transparent relative">
         {isSuccess ? (
           <div className="h-[500px] flex justify-center	 items-center">
             <div className="flex flex-col items-center justify-center gap-y-4">
               <div className="text-white text-sm md:text-3xl lg:text-4xl ">
                 Đăng ký thành công. Bạn có thể tham gia chơi ngay bây giờ.
               </div>
-              <a
-                href="#game-container"
-                className="max-w-fit min-w-[128px] p-2 text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-4 flex justify-center items-center outline-none hover:opacity-80"
-              >
-                Chơi ngay
-              </a>
             </div>
           </div>
         ) : (
-          <div className="mt-8 p-4 md:px-8 md:py-8 flex flex-col gap-2 sm:gap-2 items-center">
+          <div className="mt-8 p-4 md:px-8 md:py-8 flex flex-col gap-2 sm:gap-2 items-center rounded-lg">
             <div className="w-full">
               <input
                 placeholder="Họ *"
