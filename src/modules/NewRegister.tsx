@@ -32,7 +32,7 @@ const NewRegisterForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(true);
 
   const validateForm = () => {
     const newErrors = { ...errors };
@@ -75,8 +75,11 @@ const NewRegisterForm = () => {
         {isSuccess ? (
           <div className="h-[500px] flex justify-center	 items-center">
             <div className="flex flex-col items-center justify-center gap-y-4">
-              <div className="text-white text-sm md:text-3xl lg:text-4xl ">
-                Đăng ký thành công. Bạn có thể tham gia chơi ngay bây giờ.
+              <div className="text-white text-2xl md:text-4xl lg:text-5xl font-bold flex flex-col justify-center gap-2 items-center">
+                <div>Đăng ký thành công</div>
+                <div className="text-center">
+                  Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ.
+                </div>
               </div>
             </div>
           </div>
