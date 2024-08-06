@@ -1,3 +1,4 @@
+import { isMobileOnly, isTablet } from "react-device-detect";
 import axios from 'axios';
 import { RegisterUserRequest, UpdateUserRequest } from '../types/type';
 import { API_ENDPOINT } from '../configs';
@@ -10,9 +11,18 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+function getDevice() {
+  if(isMobileOnly) return "mobile";
+  else if(isTablet) return "tablet";
+  return  "desktop";
+}
+
 const registerUser = async (user: RegisterUserRequest) => {
   try {
-    const response = await apiClient.post('/user/register', user);
+    const response = await apiClient.post('/user/register', {
+      ...user,
+      device: getDevice()
+    });
     return response.data;
   } catch (error) {
     console.error('Error registering user:', error);
@@ -22,7 +32,10 @@ const registerUser = async (user: RegisterUserRequest) => {
 
 const updateUser = async (user: UpdateUserRequest) => {
   try {
-    const response = await apiClient.put('/user', user);
+    const response = await apiClient.put('/user', {
+      ...user,
+      device: getDevice()
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating user:', error);

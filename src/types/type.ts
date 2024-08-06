@@ -34,6 +34,7 @@ export interface GameConfig {
   nameLogoHeight: number;
   font: GameFontConfig;
   titleBannerHeight: number;
+  otherBanner: number;
   ruleBannerHeight: number;
   stuffWidths: number[];
   fireworks: number[];
@@ -62,6 +63,7 @@ export interface GameData extends GameConfig {
   playCount: number;
   result: number[];
   userInfo: any;
+  device?: string;
 }
 
 export type Layout = 'mobile' | 'desktop';

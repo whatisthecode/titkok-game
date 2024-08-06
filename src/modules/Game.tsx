@@ -28,7 +28,7 @@ const STUFFS = [
 
 const NAME_LOGO = [702, 185];
 const TITLE_BANNERS = [3974, 1459];
-const RULE_BANNERS = [2348, 1175];
+const RULE_BANNERS = [2318, 1117];
 const LAST_BANNERS = [3974, 1622];
 const NOT_REGISTERED_BANNERS = [2986, 1104];
 const BUTTON = [327, 80];
@@ -58,7 +58,8 @@ SIZES.set("<=320", {
     style: "normal"
   },
   titleBannerHeight: 110,
-  ruleBannerHeight: 150,
+  otherBanner: 120,
+  ruleBannerHeight: 140,
   resultStickWidth: 70,
   buttonHeight: 24,
   phoneWidth: 100,
@@ -88,7 +89,8 @@ SIZES.set("<=375", {
     style: "normal"
   },
   titleBannerHeight: 120,
-  ruleBannerHeight: 180,
+  otherBanner: 130,
+  ruleBannerHeight: 160,
   stuffWidths: [70, 70, 70, 70, 60, 70, 60, 70, 70],
   fireworks: [30, 60, 90],
   flowers: [{
@@ -119,6 +121,7 @@ SIZES.set("<=525", {
   },
   giftWidth: 120,
   titleBannerHeight: 120,
+  otherBanner: 150,
   ruleBannerHeight: 180,
   stuffWidths: [100, 100, 100, 100, 60, 100, 60, 100, 100],
   fireworks: [30, 60, 90],
@@ -149,6 +152,7 @@ SIZES.set("<=768", {
   },
   giftWidth: 160,
   titleBannerHeight: 160,
+  otherBanner: 200,
   ruleBannerHeight: 240,
   stuffWidths: [120, 120, 120, 100, 70, 100, 70, 120, 100],
   fireworks: [30, 60, 90],
@@ -178,6 +182,7 @@ SIZES.set("<=1366", {
     style: "normal"
   },
   titleBannerHeight: 160,
+  otherBanner: 200,
   ruleBannerHeight: 240,
   stuffWidths: [180, 180, 180, 120, 90, 120, 90, 180, 120],
   fireworks: [50, 100, 140],
@@ -201,6 +206,7 @@ SIZES.set("<=1440", {
   },
   giftWidth: 300,
   titleBannerHeight: 160,
+  otherBanner: 200,
   ruleBannerHeight: 240,
   stuffWidths: [200, 200, 200, 140, 90, 140, 90, 200, 140],
   fireworks: [50, 100, 140],
@@ -223,6 +229,7 @@ SIZES.set("<=1720", {
   },
   giftWidth: 300,
   titleBannerHeight: 160,
+  otherBanner: 200,
   ruleBannerHeight: 240,
   stuffWidths: [260, 260, 260, 160, 100, 160, 100, 260, 160],
   fireworks: [50, 100, 140],
@@ -245,6 +252,7 @@ SIZES.set(">1720", {
   },
   giftWidth: 300,
   titleBannerHeight: 160,
+  otherBanner: 200,
   ruleBannerHeight: 280,
   stuffWidths: [300, 300, 300, 160, 100, 160, 100, 300, 160],
   fireworks: [50, 100, 140],
@@ -630,7 +638,7 @@ function RuleBanner({ onBack }: { onBack: () => void }) {
   const gameData = useContext(GameContext);
   const height = gameData.ruleBannerHeight;
   const width = (height * RULE_BANNERS[0]) / RULE_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/full-step.mobile.png');
+  const [image] = useImage('/assets/tiktok-game/rule-banner.mobile.png');
   const screen = gameData.screen;
   const buttonHeight = gameData.buttonHeight;
   const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
@@ -665,7 +673,7 @@ function RuleBanner({ onBack }: { onBack: () => void }) {
 function RemindBanner({ onBack }: { onBack: () => void }) {
   // const ratio = 3479 / 1459;
   const gameData = useContext(GameContext);
-  const height = gameData.titleBannerHeight;
+  const height = gameData.otherBanner;
   const width = (height * NOT_REGISTERED_BANNERS[0]) / NOT_REGISTERED_BANNERS[1];
   const [image] = useImage('/assets/tiktok-game/not-registered-banner.desk.png');
   const screen = gameData.screen;
@@ -701,7 +709,7 @@ function RemindBanner({ onBack }: { onBack: () => void }) {
 
 function LastBanner({}) {
   const gameData = useContext(GameContext);
-  const height = gameData.titleBannerHeight;
+  const height = gameData.otherBanner;
   const width = (height * LAST_BANNERS[0]) / LAST_BANNERS[1];
   const [image] = useImage('/assets/tiktok-game/last-banner.desk.png');
   const screen = gameData.screen;
@@ -1052,22 +1060,31 @@ function ActionGroup({
         onClick={() => {
           const isRegistered = !!Cookies.get("tethut2025email");
           if(isRegistered) {
+            console.log(gameData.userInfo);
             if(!gameData.userInfo){
 
               getUser(Cookies.get("tethut2025email") as string).then((data) => {
+                const userData: any = data || {};
+                if(!data) Cookies.remove("tethut2025email", {
+                  sameSite: "None",
+                  secure: true
+                })
                 dispatch({
                   ...gameData,
                   type: "UPDATE",
                   userInfo: data,
-                  step: isRegistered ? 2 : 4,
+                  // step: 2,
+                  step: isRegistered ? (userData.isPlayed ? 3 : 2) : 4,
                 })
               })
             }
             else {
+              const userInfo = gameData.userInfo;
               dispatch({
                 ...gameData,
                 type: "UPDATE",
-                step: isRegistered ? 2 : 4,
+                // step: 2,
+                step: isRegistered ? (userInfo.isPlayed ? 3 : 2) : 4,
               })
             }
           }
@@ -1151,11 +1168,16 @@ const Provider: FunctionComponent<{
     useEffect(() => {
       if(isRegistered) {
         !gameData.userInfo && getUser(Cookies.get("tethut2025email") as string).then((data) => {
+          const userData: any = data || {};
+          if(!data) Cookies.remove("tethut2025email", {
+            sameSite: "None",
+            secure: true
+          })
           dispatch({
             ...gameData,
             type: "UPDATE",
             userInfo: data,
-            step: data && data.isPlayed ? 3 : 0
+            step: userData && userData.isPlayed ? 3 : 0
           })
         })
       }
