@@ -1306,8 +1306,8 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
                   ...gameData,
                   type: 'UPDATE',
                   userInfo: data,
-                  // step: 2,
-                  step: _isRegistered ? (userData.isPlayed ? 3 : 2) : 4,
+                  step: 2,
+                  // step: _isRegistered ? (userData.isPlayed ? 3 : 2) : 4,
                 });
               });
             } else {
@@ -1315,8 +1315,8 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
               dispatch({
                 ...gameData,
                 type: 'UPDATE',
-                // step: 2,
-                step: _isRegistered ? (userInfo.isPlayed ? 3 : 2) : 4,
+                step: 2,
+                // step: _isRegistered ? (userInfo.isPlayed ? 3 : 2) : 4,
               });
             }
           } else {
