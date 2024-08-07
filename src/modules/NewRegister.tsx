@@ -44,7 +44,7 @@ const NewRegisterForm = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [isSuccess, setIsSuccess] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const validateForm = () => {
     const newErrors = { ...errors };
@@ -74,7 +74,7 @@ const NewRegisterForm = ({
         setUserData(data);
         setIsSubmitting(false);
         setIsSuccess(true);
-        if (canUseCookies && !onRegistered) {
+        if (canUseCookies) {
           Cookies.set('tethut2025email', convertToBase64(form.email), {
             expires: 10,
             sameSite: 'None',
@@ -112,7 +112,7 @@ const NewRegisterForm = ({
                     để có cơ hội nhận quà độc quyền từ TikTok
                   </div>
                   <button
-                    // onClick={onClickScrollToGame}
+                    onClick={onClickScrollToGame}
                     className="max-w-fit min-w-[128px] py-3 px-8 text-black text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-5 flex justify-center items-center outline-none cursor-pointer hover:opacity-80"
                   >
                     Rút quẻ ngay

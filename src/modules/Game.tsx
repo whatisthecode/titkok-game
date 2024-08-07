@@ -1447,6 +1447,16 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const flowers = gameData.flowers;
 
   useEffect(() => {
+    dispatch({
+      ...gameData,
+      screen: {
+        ...gameData.screen,
+        height: screenHeight
+      }
+    })
+  }, []);
+
+  useEffect(() => {
     if (userData)
       dispatch({
         ...gameData,
@@ -1575,6 +1585,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
 
   return (
     <div
+      id="game"
       className={`w-full h-dvh justify-end flex flex-col relative overflow-x-hidden`}
       style={{
         maxHeight: screenHeight,
@@ -1810,6 +1821,12 @@ function Game() {
       <NewRegisterForm
         onRegistered={userData => {
           setUserData(userData);
+        }}
+        onClickScrollToGame={() => {
+          const gameAnchor = document.querySelector("#game");
+          if(gameAnchor) {
+            gameAnchor.scrollIntoView({"behavior": "smooth"})
+          }
         }}
       />
       <GameInner isRegistered={isRegistered} userData={userData} />

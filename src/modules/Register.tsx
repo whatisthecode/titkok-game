@@ -11,22 +11,6 @@ type Props = {
   setStep: (step: Step) => void;
 };
 
-async function requestStorageAccess() {
-  // console.log("requestStorageAccess");
-  try {
-    const hasStorageAccess = await document.hasStorageAccess();
-    if(hasStorageAccess) {
-      await document.requestStorageAccess()
-      return true;
-    }
-    return false;
-  }
-  catch(e) {
-    console.error(e);
-    return false;
-  }
-}
-
 const RegisterForm = ({ setStep }: Props) => {
   const { setUserData } = useUser();
   const [form, setForm] = useState({
