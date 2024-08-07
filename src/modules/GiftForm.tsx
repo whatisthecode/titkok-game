@@ -61,8 +61,6 @@ const GiftForm = ({
     if (!form.phone) newErrors.phone = '* Vui lòng điền số điện thoại';
     else delete newErrors.phone;
 
-    console.log(newErrors);
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

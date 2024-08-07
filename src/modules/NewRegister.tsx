@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Cookies from 'js-cookie';
 import { registerUser } from '../services/apiClient';
-import { useUser } from '../contexts';
+import { GameContext, useUser } from '../contexts';
 import { Loading } from '../components/Loading';
 import './Register.css';
-import { validateEmail } from '../util';
+import { requestStorageAccess, validateEmail } from '../util';
+import { IUser } from '../types/type';
 // import { Step } from '../types/type';
 
 // type Props = {
@@ -15,7 +16,11 @@ const convertToBase64 = (str: string): string => {
   return btoa(str);
 };
 
-const NewRegisterForm = () => {
+const NewRegisterForm = ({
+  onRegistered
+} : {
+  onRegistered?: (data: IUser) => void
+}) => {
   const { setUserData } = useUser();
   const [form, setForm] = useState({
     firstName: '',
@@ -53,6 +58,7 @@ const NewRegisterForm = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);
+    const canUseCookies = await requestStorageAccess();
     await registerUser(form)
       .then(data => {
         if (!data) {
@@ -62,11 +68,16 @@ const NewRegisterForm = () => {
         setUserData(data);
         setIsSubmitting(false);
         setIsSuccess(true);
-        Cookies.set('tethut2025email', convertToBase64(form.email), {
-          expires: 10,
-          sameSite: 'None',
-          secure: true,
-        });
+        if (canUseCookies && !onRegistered) {
+          Cookies.set('tethut2025email', convertToBase64(form.email), {
+            expires: 10,
+            sameSite: 'None',
+            secure: true,
+          });
+        }
+        else {
+          onRegistered && onRegistered(data);
+        }
       })
       .catch(error => {
         console.error('Đã có lỗi xảy ra. Vui lòng thử lại', error);
@@ -87,12 +98,12 @@ const NewRegisterForm = () => {
                   Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ
                   để có cơ hội nhận quà độc quyền từ TikTok
                 </div>
-                <a
+                {/* <a
                   href="#g-625205822"
                   className="max-w-fit min-w-[128px] py-3 px-8 text-black text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-5 flex justify-center items-center outline-none cursor-pointer hover:opacity-80"
                 >
                   Rút quẻ ngay
-                </a>
+                </a> */}
               </div>
             </div>
           </div>

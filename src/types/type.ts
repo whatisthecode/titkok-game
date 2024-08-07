@@ -5,6 +5,9 @@ export interface IUser {
   email: string;
   company: string;
   isRewarded?: boolean;
+  isPlayed?: boolean;
+  device?: string;
+  giftId?: number;
   phone?: string;
   address?: string;
   title?: string;

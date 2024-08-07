@@ -23,12 +23,14 @@ const App = () => {
   //       return null;
   //   }
   // };
+  console.log(+new Date() + "-" + window.navigator.userAgent);
   return (
     <UserContext.Provider value={{ userData, setUserData }}>
       <Router>
         <Routes>
           <Route path="/" element={<Game />} />
-          <Route path="/form" element={<NewRegisterForm />} /> {/* New route */}
+          {/* New route */}
+          {/* <Route path="/form" element={<NewRegisterForm />} /> */}
         </Routes>
       </Router>
     </UserContext.Provider>

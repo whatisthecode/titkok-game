@@ -1,3 +1,5 @@
+// import {} from "react-device-detect";
+
 export const LIST_RESULT = [
     { image: "/assets/tiktok-game/que-so-1.desk.png", type: "dự án", text1: "Khách mới tới tấp, dự án dồi dào", text2: "Quẻ \"Hút Dự Án\" cho thấy năm nay bạn sẽ gặp nhiều may mắn và thuận lợi trong việc tìm kiếm và thu hút các dự án mới. Các dự án dồi dào sẽ liên tiếp đến với bạn, giúp công việc phát triển mạnh mẽ và bền vững." },
     { image: "/assets/tiktok-game/que-so-2.desk.png", type: "tăng lương", text1: "Công sức bù đắp, lương thưởng xứng đáng", text2: "Quẻ \"Hút Tăng Lương\" cho thấy năm nay bạn sẽ được đền đáp xứng đáng cho những nỗ lực và cống hiến trong công việc. Khi bạn làm việc chăm chỉ và đạt được những kết quả ấn tượng, bạn sẽ được cấp trên công nhận và tưởng thưởng xứng đáng." },
@@ -43,3 +45,18 @@ export function generateDefaultResult(playCount: number) {
     }
     return result;
 }
+
+export async function requestStorageAccess() {
+    try {
+      const hasStorageAccess = await document.hasStorageAccess();
+      if(hasStorageAccess) {
+        await document.requestStorageAccess()
+        return true;
+      }
+      return false;
+    }
+    catch(e) {
+      console.error(e);
+      return false;
+    }
+  }
