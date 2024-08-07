@@ -111,12 +111,12 @@ const NewRegisterForm = ({
                     Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ
                     để có cơ hội nhận quà độc quyền từ TikTok
                   </div>
-                  <button
-                    onClick={onClickScrollToGame}
+                  <a
+                    href="#game"
                     className="max-w-fit min-w-[128px] py-3 px-8 text-black text-[16px] sm:text-[20px] md:min-w-[196px] md:p-4 rounded-full md:text-[20px] bg-[#3bfff4] border border-white mt-5 flex justify-center items-center outline-none cursor-pointer hover:opacity-80"
                   >
                     Rút quẻ ngay
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
