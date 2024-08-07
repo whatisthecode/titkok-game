@@ -393,8 +393,19 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
       if (current < playCount) {
         result[current] = getWishingResult();
         if (GIFT_IN_LIST.includes(result[current])) {
-          getGift().then(giftId => {
-            if (giftId) result[current] = 9 + giftId - 1;
+          getGift().then(async(giftId) => {
+            if (giftId) {
+              try {
+                await updateUser({
+                  ...gameData.userInfo,
+                  isRewarded: true,
+                  isPlayed: true,
+                  giftId: giftId
+                })
+              }
+              catch(_){}
+              result[current] = 9 + giftId - 1;
+            }
             else result[current] = getWishingResult(0, 9);
             dispatch({
               ...gameData,
