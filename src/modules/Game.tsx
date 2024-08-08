@@ -933,8 +933,8 @@ function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: (
   const screen = gameData.screen;
 
   const [config, setConfig] = useState({
-    x: window.innerWidth / 2 - width / 2,
-    y: window.innerHeight / 2 - height / 2,
+    x: screen.width / 2 - width / 2,
+    y: screen.height / 2 - height / 2,
     rotation: 0,
   });
 
@@ -1214,6 +1214,8 @@ function Button({
 }
 
 function Result({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: () => void }) {
+  const gameData = useContext(GameContext);
+  const screen = gameData.screen;
   const [config, setConfig] = useState({
     x: 0,
     w: window.innerWidth,
@@ -1242,7 +1244,7 @@ function Result({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: () => 
         x={config.x}
         y={0}
         width={config.w}
-        height={window.innerHeight}
+        height={screen.height}
       />
       <StickResult onBack={onBack} onDropInfo={onDropInfo} />
     </Layer>
@@ -1305,9 +1307,9 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
                 dispatch({
                   ...gameData,
                   type: 'UPDATE',
-                  userInfo: data,
-                  step: 2,
-                  // step: _isRegistered ? (userData.isPlayed ? 3 : 2) : 4,
+                  userInfo: userData,
+                  // step: 2,
+                  step: _isRegistered ? (userData.isPlayed ? 3 : 2) : 4,
                 });
               });
             } else {
@@ -1315,8 +1317,8 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
               dispatch({
                 ...gameData,
                 type: 'UPDATE',
-                step: 2,
-                // step: _isRegistered ? (userInfo.isPlayed ? 3 : 2) : 4,
+                // step: 2,
+                step: _isRegistered ? (userInfo.isPlayed ? 3 : 2) : 4,
               });
             }
           } else {
@@ -1385,7 +1387,7 @@ const Provider: FunctionComponent<{
     screen: {
       dpr: window.devicePixelRatio,
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight / 2,
       bWidth: 1920,
       bHeight: 1080,
     },
@@ -1447,16 +1449,6 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const flowers = gameData.flowers;
 
   useEffect(() => {
-    dispatch({
-      ...gameData,
-      screen: {
-        ...gameData.screen,
-        height: screenHeight
-      }
-    })
-  }, []);
-
-  useEffect(() => {
     if (userData)
       dispatch({
         ...gameData,
@@ -1469,7 +1461,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
     const handleResize = () => {
       const newScreen = {
         width: window.innerWidth,
-        height: window.innerHeight,
+        height: window.innerHeight / 2,
         dpr: window.devicePixelRatio,
         bWidth: 1920,
         bHeight: 1080,
@@ -1551,7 +1543,17 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
 
   const pathY = (pathSize.width - pathSize.rawWidth) / 2;
 
-  const screenHeight = window.screen.height;
+  const screenHeight = (gameData.orientation === "landscape" ? screen.width * 9 / 16 : screen.width * 16 / 9) / 2;
+
+  useEffect(() => {
+    dispatch({
+      ...gameData,
+      screen: {
+        ...gameData.screen,
+        height: screenHeight
+      }
+    })
+  }, [screenHeight]);
 
   const fireworks: StuffConfig[] = [
     {
@@ -1583,62 +1585,70 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
     touching: false,
   });
 
+  const upperRef = useRef<any>();
+
   return (
     <div
       id="game"
-      className={`w-full h-dvh justify-end flex flex-col relative overflow-x-hidden`}
-      style={{
-        maxHeight: screenHeight,
+      className={`w-full h-[50dvh] justify-end flex flex-col relative overflow-x-hidden`}
+      onTouchStart={() => {
+        if(upperRef.current) {
+          const element = (upperRef.current as HTMLDivElement);
+          const current = element.style.pointerEvents;
+          if(!current || current == "none") element.style.pointerEvents = "auto";
+          else element.style.pointerEvents = "none";
+        }
+      //   const touch = e.touches[0];
+      //   position.current.startY = window.scrollY;
+      //   position.current.y = touch.clientY;
+      //   position.current.time = performance.now();
+      //   position.current.v = 0;
+      //   position.current.touching = true;
+      //   console.log("start", position);
       }}
-      onTouchStart={e => {
-        const touch = e.touches[0];
-        position.current.startY = window.scrollY;
-        position.current.y = touch.clientY;
-        position.current.time = performance.now();
-        position.current.v = 0;
-        position.current.touching = true;
-        // console.log("start", position);
-      }}
-      onTouchMove={e => {
-        if (!position.current.touching) return;
+      onTouchMove={() => {
+        // if (!position.current.touching) return;
 
-        const touch = e.touches[0];
-        const currentY = touch.clientY;
-        const deltaY = position.current.y - currentY;
-        window.scrollTo(0, position.current.startY + deltaY);
+        // const touch = e.touches[0];
+        // const currentY = touch.clientY;
+        // const deltaY = position.current.y - currentY;
+        // console.log("move", position.current.startY + deltaY);
+        // window.scrollTo(0, position.current.startY + deltaY);
 
-        const currentTime = performance.now();
-        const deltaTime = currentTime - position.current.time;
+        // const currentTime = performance.now();
+        // const deltaTime = currentTime - position.current.time;
 
-        position.current.v = (deltaY / deltaTime) * 1000;
-        position.current.time = currentTime;
-        // console.log("move", position);
+        // position.current.v = (deltaY / deltaTime) * 1000;
+        // position.current.time = currentTime;
+        // // console.log("move", position);
       }}
       onTouchEnd={() => {
-        position.current.touching = false;
-        const deceleration = 0.001;
+        // if(upperRef.current) (upperRef.current as HTMLDivElement).style.pointerEvents = "none";
+        // position.current.touching = false;
+        // const deceleration = 0.001;
 
-        function scrollStep(currentTime: number) {
-          if (position.current.touching) return;
+        // function scrollStep(currentTime: number) {
+        //   if (position.current.touching) return;
 
-          const deltaTime = currentTime - position.current.time;
-          position.current.time = currentTime;
+        //   const deltaTime = currentTime - position.current.time;
+        //   position.current.time = currentTime;
 
-          // console.log(position.current.v);
-          const distance = (position.current.v * deltaTime) / 1000;
-          position.current.v *= 1 - deceleration * deltaTime;
+        //   console.log(position.current.v);
+        //   const distance = (position.current.v * deltaTime) / 1000;
+        //   position.current.v *= 1 - deceleration * deltaTime;
 
-          window.scrollBy(0, distance);
-          // console.log(distance);
-          if (Math.abs(position.current.v) > 0.1) {
-            requestAnimationFrame(scrollStep);
-          }
-        }
-        // console.log("end", position);
+        //   window.scrollBy(0, distance);
+        //   // console.log(distance);
+        //   if (Math.abs(position.current.v) > 0.1) {
+        //     requestAnimationFrame(scrollStep);
+        //   }
+        // }
+        // // console.log("end", position);
 
-        requestAnimationFrame(scrollStep);
+        // requestAnimationFrame(scrollStep);
       }}
     >
+      <div className="absolute w-full h-full z-30 pointer-events-none" ref={upperRef}/>
       {isLoading ? (
         <div className="w-dvw h-dvh absolute top-0 left-0 z-30 bg-[#00000050]"></div>
       ) : null}
