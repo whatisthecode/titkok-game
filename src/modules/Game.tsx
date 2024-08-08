@@ -422,10 +422,17 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
     if (currentConfig.shakeCount == currentConfig.maxShake + 1) {
       currentConfig.x = currentConfig.minX + 10;
       currentConfig.shakeCount += 1;
-      updateUser({
-        ...gameData.userInfo,
+      const executor = gameData.userInfo.giftId ? updateUser({
+        email: gameData.userInfo.email,
+        isRewarded: true,
+        giftId: gameData.userInfo.giftId,
         isPlayed: true,
-      }).then(() => {
+      } as any) : updateUser({
+        email: gameData.userInfo.email,
+        isPlayed: true
+      } as any)
+
+      executor.then(() => {
         currentConfig.shakeCount = 0;
         setConfig(currentConfig);
         shake(false);
@@ -476,15 +483,12 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
         if (GIFT_IN_LIST.includes(result[current])) {
           getGift().then(async(giftId) => {
             if (giftId) {
-              try {
-                await updateUser({
-                  ...gameData.userInfo,
-                  isRewarded: true,
-                  isPlayed: true,
-                  giftId: giftId
-                })
+              gameData.userInfo = {
+                ...gameData.userInfo,
+                isRewarded: true,
+                isPlayed: true,
+                giftId: giftId
               }
-              catch(_){}
               result[current] = 9 + giftId - 1;
             }
             else result[current] = getWishingResult(0, 9);
@@ -1788,7 +1792,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
       </Stage>
       {showResult && !showDropInfo ? (
         <div className="absolute top-0 left-0 w-full h-full z-10">
-          <Stage width={window.innerWidth} height={window.innerHeight}>
+          <Stage width={screen.width} height={screen.height}>
             <Result
               onBack={() => {
                 setShowResut(false);

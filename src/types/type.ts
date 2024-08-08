@@ -77,5 +77,5 @@ export type RegisterUserRequest = Pick<IUser, 'firstName' | 'lastName' | 'email'
 
 export type UpdateUserRequest = Pick<
   IUser,
-  'fullName' | 'phone' | 'address' | 'email' | 'company' | 'title' | 'isRewarded'
+  'fullName' | 'phone' | 'address' | 'email' | 'company' | 'title' | 'isRewarded' | 'isPlayed' | 'giftId'
 >;

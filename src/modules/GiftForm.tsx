@@ -69,12 +69,8 @@ const GiftForm = ({
     if (!validateForm()) return;
     setIsSubmitting(true);
     await updateUser({
-      ...userData,
-      ...form,
-      isRewarded: true,
-      isPlayed: true,
-      giftId: gameData.result[gameData.current - 1] + 1 - 9
-    })
+      ...form
+    }, true)
       .then(data => {
         if (!data) {
           setIsSubmitting(false);

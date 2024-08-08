@@ -30,9 +30,12 @@ const registerUser = async (user: RegisterUserRequest) => {
   }
 };
 
-const updateUser = async (user: UpdateUserRequest) => {
+const updateUser = async (user: UpdateUserRequest, isRewarded = false) => {
   try {
-    const response = await apiClient.put('/user', {
+    let api = "";
+    if(isRewarded) api = '/user/reward';
+    else api = '/user';
+    const response = await apiClient.put(api, {
       ...user,
       device: getDevice()
     });
