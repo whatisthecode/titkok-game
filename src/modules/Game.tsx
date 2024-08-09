@@ -41,7 +41,7 @@ const STUFFS = [
 ];
 
 const NAME_LOGO = [702, 185];
-const TITLE_BANNERS = [3974, 1459];
+const TITLE_BANNERS = [1948, 700];
 const RULE_BANNERS = [2318, 1117];
 const LAST_BANNERS = [3974, 1622];
 const NOT_REGISTERED_BANNERS = [2986, 1104];
@@ -359,7 +359,7 @@ function getGameConfig(): GameConfig {
   return SIZES.get('<=1366') as GameConfig;
 }
 
-function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
+function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: () => void }) {
   const gameData = useContext(GameContext);
   const dispatch = useContext(GameDispatchContext);
   const screen = gameData.screen;
@@ -523,11 +523,11 @@ function Cup({ onShakeEnd }: { onShakeEnd: () => void }) {
       <Layer
         imageSmoothingEnabled
         onTap={() => {
-          shake(true);
+          shakable && shake(true);
         }}
         onClick={() => {
           // console.log(gameData);
-          shake(true);
+          shakable && shake(true);
         }}
       >
         <Image image={imageBack} x={config.x} y={topY} width={width} height={upperHeight} />
@@ -769,7 +769,7 @@ function TitleBanner() {
   const screen = gameData.screen;
   const height = gameData.titleBannerHeight;
   const width = (height * TITLE_BANNERS[0]) / TITLE_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/full-title.desk.png');
+  const [image] = useImage('/assets/materials/title.png');
 
   const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
     gameData.layout as Layout,
@@ -1253,7 +1253,7 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
         y={y}
         w={buttonWidth}
         h={buttonHeight}
-        src="/assets/tiktok-game/bi-kip-xin-que.desk.png"
+        src="/assets/materials/bi-kip-xin-que.png"
         onClick={() => {
           dispatch({
             ...gameData,
@@ -1267,7 +1267,7 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
         y={y}
         w={buttonWidth}
         h={buttonHeight}
-        src="/assets/tiktok-game/xin-que.desk.png"
+        src="/assets/materials/xin-que.png"
         onClick={() => {
           const _isRegistered = isRegistered || !!Cookies.get('tethut2025email');
           if (_isRegistered) {
@@ -1420,7 +1420,9 @@ function generateScreenSize(){
   const gcd = findGCD(currentWidth, currentHeight);
   const w = currentWidth / gcd;
   const h = Math.ceil(9 * w / 16);
-  const screenHeight = (orientation === "landscape" ? (isWeird ? (currentWidth * h / w) : currentWidth * 9 / 16) : currentWidth * 16 / 9);
+  const screenHeight = (orientation === "landscape" ? (isWeird ? (currentWidth * h / w) : currentWidth * 9 / 16) : currentHeight / 2);
+
+  console.log(currentWidth, screenHeight);
 
   return {
     width: currentWidth,
@@ -1581,6 +1583,8 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const pathY = (pathSize.width - pathSize.rawWidth) / 2;
   const isWeird = 2 * window.innerWidth / window.innerHeight  >= 21 / 9;
 
+  console.log(screen);  
+
   return (
     <div
       id="game"
@@ -1651,7 +1655,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
       ) : null}
       <Stage width={screen.width} height={screen.height}>
         <Layer id="background" imageSmoothingEnabled>
-          {currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 4 ? (
+          {/* {currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 4 ? (
             <Phone />
           ) : null}
           <Path />
@@ -1739,10 +1743,10 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
             y={fireworks[2].y}
             width={fireworks[2].w}
             height={fireworks[2].h}
-          />
+          /> */}
         </Layer>
         <Layer imageSmoothingEnabled>
-          <TiktokLogo />
+          {/* <TiktokLogo /> */}
           {currentStep === 3 ? <LastBanner /> : null}
           {currentStep === 0 || currentStep == 2 ? <TitleBanner /> : null}
           {currentStep === 1 ? (
@@ -1768,16 +1772,15 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
             />
           ) : null}
           {currentStep === 0 ? <ActionGroup isRegistered={isRegistered} /> : null}
-          <NameLogo />
+          {/* <NameLogo /> */}
           {/* <Mask /> */}
         </Layer>
-        {currentStep === 2 ? (
-          <Cup
-            onShakeEnd={() => {
-              setShowResut(true);
-            }}
-          />
-        ) : null}
+        <Cup
+          shakable={currentStep === 2}
+          onShakeEnd={() => {
+            setShowResut(true);
+          }}
+        />
       </Stage>
       {showResult && !showDropInfo ? (
         <div className="absolute top-0 left-0 w-full h-full z-10">
