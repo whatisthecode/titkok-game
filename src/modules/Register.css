@@ -7,6 +7,6 @@
 }
 
 .new-form-register {
-  @apply h-[50dvh];
+  @apply box-border;
   padding: 1rem 0.5rem 0 0.5rem;
 }

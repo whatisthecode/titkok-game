@@ -1390,8 +1390,7 @@ const Provider: FunctionComponent<{
     result,
     screen: {
       dpr: window.devicePixelRatio,
-      width: window.innerWidth,
-      height: window.innerHeight / 2,
+      ...generateScreenSize(),
       bWidth: 1920,
       bHeight: 1080,
     },
@@ -1426,6 +1425,37 @@ const Provider: FunctionComponent<{
     </GameContext.Provider>
   );
 };
+
+function findGCD(a: number, b: number) {
+  if(a == b) return a;
+  
+  let greater = a > b ? a : b;
+  let lessthan = a > b ? b : a;
+
+  const temp = lessthan;
+
+  lessthan = greater - lessthan;
+  greater = temp;
+
+  return findGCD(greater, lessthan);
+}
+
+function generateScreenSize(){
+
+  const currentWidth = window.innerWidth;
+  const currentHeight = window.innerHeight / 2;
+  const isWeird = currentWidth / currentHeight >= 21 / 9;
+  const orientation = window.screen.orientation.type.startsWith('landscape') ? "landscape" : "portrait";
+  const gcd = findGCD(currentWidth, currentHeight);
+  const w = currentWidth / gcd;
+  const h = Math.ceil(9 * w / 16);
+  const screenHeight = (orientation === "landscape" ? (isWeird ? (2 * currentWidth * h / w) : currentWidth * 9 / 16) : currentWidth * 16 / 9) / 2;
+
+  return {
+    width: currentWidth,
+    height: screenHeight
+  }
+}
 
 function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData?: IUser }) {
   const dispatch = useContext(GameDispatchContext);
@@ -1464,8 +1494,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   useEffect(() => {
     const handleResize = () => {
       const newScreen = {
-        width: window.innerWidth,
-        height: window.innerHeight / 2,
+        ...generateScreenSize(),
         dpr: window.devicePixelRatio,
         bWidth: 1920,
         bHeight: 1080,
@@ -1545,19 +1574,15 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
     },
   ];
 
-  const pathY = (pathSize.width - pathSize.rawWidth) / 2;
-
-  const screenHeight = (gameData.orientation === "landscape" ? screen.width * 9 / 16 : screen.width * 16 / 9) / 2;
-
-  useEffect(() => {
-    dispatch({
-      ...gameData,
-      screen: {
-        ...gameData.screen,
-        height: screenHeight
-      }
-    })
-  }, [screenHeight]);
+  // useEffect(() => {
+  //   dispatch({
+  //     ...gameData,
+  //     screen: {
+  //       ...gameData.screen,
+  //       height: screenHeight
+  //     }
+  //   })
+  // }, [screenHeight]);
 
   const fireworks: StuffConfig[] = [
     {
@@ -1591,10 +1616,16 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
 
   const upperRef = useRef<any>();
 
+  const pathY = (pathSize.width - pathSize.rawWidth) / 2;
+  const isWeird = 2 * window.innerWidth / window.innerHeight  >= 21 / 9;
+
   return (
     <div
       id="game"
-      className={`w-full h-[50dvh] justify-end flex flex-col relative overflow-x-hidden`}
+      className={`w-full justify-end flex flex-col relative overflow-x-hidden`}
+      style={{
+        ...isWeird ? {"height": "fit-content"} : {"height": "50vh"}
+      }}
       onTouchStart={() => {
         if(upperRef.current) {
           const element = (upperRef.current as HTMLDivElement);
