@@ -90,8 +90,12 @@ const NewRegisterForm = ({
       });
   };
 
+  const isWeird = 2 * window.innerWidth / window.innerHeight >= 21 / 9;
+
   return (
-    <div className="new-form-register">
+    <div className="new-form-register" style={{
+      height: isWeird ? "fit-content": "50dvh"
+    }}>
       <div className="text-[24px] md:text-[48px] lg:text-[60px] text-white font-bold text-center mb-[40px] flex justify-center items-center">
         <span className="relative">
           Nhanh tay <span className="text-[#F80048]">đăng kí</span> ngay nào
