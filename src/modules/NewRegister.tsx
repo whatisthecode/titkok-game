@@ -1,7 +1,7 @@
-import { useContext, useRef, useState } from 'react';
+import { useState } from 'react';
 import Cookies from 'js-cookie';
 import { registerUser } from '../services/apiClient';
-import { GameContext, useUser } from '../contexts';
+import { useUser } from '../contexts';
 import { Loading } from '../components/Loading';
 import './Register.css';
 import { requestStorageAccess, validateEmail } from '../util';
@@ -108,8 +108,12 @@ const NewRegisterForm = ({
                 <div className="text-white p-6 text-xl md:text-3xl lg:text-4xl font-bold flex flex-col justify-center gap-2 items-center">
                   <div>Đăng ký thành công</div>
                   <div className="text-center">
-                    Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ
-                    để có cơ hội nhận quà độc quyền từ TikTok
+                    Bạn có thể <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ.
+                  </div>
+                  <div className="text-center">
+                    <span className="text-[#3bfff4]">Kéo xuống</span> tham gia để có cơ hội nhận quà độc quyền từ TikTok
+                    {/* Bạn có thể tham gia <span className="text-[#FF0048]">xin quẻ</span> ngay bây giờ
+                    để có cơ hội nhận quà độc quyền từ TikTok */}
                   </div>
                   {/* <a
                     href="#game"

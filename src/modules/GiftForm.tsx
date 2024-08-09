@@ -1,18 +1,13 @@
 import { useContext, useState } from 'react';
 import { Loading } from '../components/Loading';
 import { updateUser } from '../services/apiClient';
-import { GameContext, useUser } from '../contexts';
-import { Step } from '../types/type';
+import { GameContext } from '../contexts';
 import WatermelonIcon from '../assets/watermelon.svg';
 import BluePipe from '../assets/blue-pipe.svg';
 import YellowFirework from '../assets/yellow-firework.svg';
 
 import './GiftForm.css';
 import { validateEmail } from '../util';
-
-type Props = {
-  setStep: (step: Step) => void;
-};
 
 type Form = {
   fullName: string;

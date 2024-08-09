@@ -3,7 +3,6 @@ import useImage from 'use-image';
 import Cookies from 'js-cookie';
 import './Game.css';
 import {
-  Children,
   FunctionComponent,
   useContext,
   useEffect,
@@ -12,14 +11,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { GameConfig, GameData, IUser, Layout, Step, StuffConfig } from '../types/type';
+import { GameConfig, GameData, IUser, Layout, StuffConfig } from '../types/type';
 import { GameContext, GameDispatchContext } from '../contexts';
 import { GameReducer } from '../services/reducer';
 import {
   GIFT_IN_LIST,
   LIST_RESULT,
   generateDefaultResult,
-  getPlayTimes,
   getWishingResult,
 } from '../util';
 import GiftForm from './GiftForm';
@@ -889,31 +887,6 @@ function LastBanner({}) {
   );
 }
 
-function Mask() {
-  const [config, setConfig] = useState({
-    x: 0,
-    w: window.innerWidth,
-  });
-
-  const update = () => {
-    const currentConfig = { ...config };
-    currentConfig.x += 4;
-    currentConfig.w -= 8;
-    if (currentConfig.w < 0) currentConfig.w = 0;
-    if (config.w > 0) {
-      setConfig(currentConfig);
-    }
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      window.requestAnimationFrame(update);
-    }, 1000 / 144);
-  }, [config]);
-
-  return <Rect fill="#000" x={config.x} y={0} width={config.w} height={window.innerHeight} />;
-}
-
 function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: () => void }) {
   const gameData = useContext(GameContext);
   const result = gameData.result;
@@ -947,9 +920,9 @@ function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: (
 
     currentConfig.rotation += 1;
     currentConfig.x =
-      window.innerWidth / 2 - width / 2 + (height / (2 * 70)) * currentConfig.rotation;
+      screen.width / 2 - width / 2 + (height / (2 * 70)) * currentConfig.rotation;
     currentConfig.y =
-      window.innerHeight / 2 - height / 2 - (height / (6 * 70)) * currentConfig.rotation;
+      screen.height / 2 - height / 2 - (height / (6 * 70)) * currentConfig.rotation;
 
     if (currentConfig.y < 20) currentConfig.y = 20;
 
@@ -1137,8 +1110,6 @@ function GiftBox({ onAnimateEnd }: { onAnimateEnd: () => void }) {
   const uy = ly - uheight / 20;
 
   const giftWitdh = gameData.giftWidth;
-  const giftX = screen.width / 2 - giftWitdh / 2;
-  const giftY = screen.height / 2 - (2 * giftWitdh) / 3;
 
   const [gift, setGift] = useState({
     width: giftWitdh,
@@ -1389,7 +1360,7 @@ const Provider: FunctionComponent<{
     playCount: playCount,
     result,
     screen: {
-      dpr: window.devicePixelRatio,
+      dpr: 1 || window.devicePixelRatio,
       width: window.innerWidth,
       height: window.innerHeight / 2,
       bWidth: 1920,
@@ -1434,23 +1405,14 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const [showDropInfo, setShowDropInfo] = useState(false);
   const screen = gameData.screen;
 
+  // console.log(screen);
+
   const userInfo = gameData && gameData.userInfo;
 
   const isLoading = isRegistered && !userInfo;
-  const isPlayed = userInfo && userInfo.isPlayed;
-
-  const cupWidth = gameData.phoneWidth;
-  const cupHeight = (cupWidth * 1096) / 911;
-  const cup = {
-    x: screen.width / 2 - cupWidth / 2,
-    y: (screen.height * 2) / 3 - cupHeight / 2,
-    w: cupWidth,
-    h: cupHeight,
-  };
 
   const stuffWidths = gameData.stuffWidths;
   const fireworkWidths = gameData.fireworks;
-  const flowers = gameData.flowers;
 
   useEffect(() => {
     if (userData)
@@ -1466,7 +1428,7 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
       const newScreen = {
         width: window.innerWidth,
         height: window.innerHeight / 2,
-        dpr: window.devicePixelRatio,
+        dpr: 1 || window.devicePixelRatio,
         bWidth: 1920,
         bHeight: 1080,
       };
@@ -1545,11 +1507,10 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
     },
   ];
 
-  const pathY = (pathSize.width - pathSize.rawWidth) / 2;
-
-  const screenHeight = (gameData.orientation === "landscape" ? screen.width * 9 / 16 : screen.width * 16 / 9) / 2;
+  const screenHeight = (gameData.orientation === "landscape" ? screen.width * 9 / 16 : screen.width * 16 / 9);
 
   useEffect(() => {
+    // console.log(screenHeight);
     dispatch({
       ...gameData,
       screen: {
@@ -1580,14 +1541,14 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
     },
   ];
 
-  const position = useRef({
-    startY: 0,
-    x: 0,
-    y: 0,
-    v: 0,
-    time: 0,
-    touching: false,
-  });
+  // const position = useRef({
+  //   startY: 0,
+  //   x: 0,
+  //   y: 0,
+  //   v: 0,
+  //   time: 0,
+  //   touching: false,
+  // });
 
   const upperRef = useRef<any>();
 
@@ -1726,10 +1687,6 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
             width={stuffConfigs[8].w}
             height={stuffConfigs[8].h}
           />
-          {/* <Stuff src="/assets/tiktok-game/flower-1.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
-          {/* <Stuff src="/assets/tiktok-game/flower-2.desk.png" x={flowers[1].x} y={flowers[1].y} width={flowers[1].w} height={flowers[1].h} /> */}
-          {/* <Stuff src="/assets/tiktok-game/flower-3.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
-          {/* <Stuff src="/assets/tiktok-game/flower-4.desk.png" x={360} y={window.innerHeight / 2 - 160} width={180} height={80}/> */}
           <Firework
             src="/assets/tiktok-game/red-firework.desk.png"
             x={fireworks[0].x}
