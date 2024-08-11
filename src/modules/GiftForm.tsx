@@ -62,6 +62,7 @@ const GiftForm = ({
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
+    // onSendInfo && onSendInfo();
     setIsSubmitting(true);
     await updateUser({
       ...form

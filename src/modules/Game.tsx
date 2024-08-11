@@ -1,4 +1,4 @@
-import { Stage, Layer, Image, Rect, Text } from 'react-konva';
+import { Stage, Layer, Image, Rect, Text, Circle, Ring } from 'react-konva';
 import useImage from 'use-image';
 import Cookies from 'js-cookie';
 import './Game.css';
@@ -19,6 +19,7 @@ import {
   LIST_RESULT,
   generateDefaultResult,
   getWishingResult,
+  random,
 } from '../util';
 import GiftForm from './GiftForm';
 import { getGift, getUser, updateUser } from '../services/apiClient';
@@ -29,22 +30,24 @@ import NewRegisterForm from './NewRegister';
 // };
 
 const STUFFS = [
-  [1225, 1362],
-  [1497, 1621],
-  [1481, 1185],
-  [265, 202],
-  [359, 482],
-  [739, 851],
-  [413, 326],
-  [1414, 907],
-  [716, 322],
+  [742, 412],
+  [1088, 550]
 ];
+
+const CLOUDS = [684, 363];
+const EVENT_TIME = [2014, 244];
+const GIFTS = [
+  [1628, 1752],
+  [1799, 1280],
+  [1645, 1593],
+  [1323, 1529]
+]
 
 const NAME_LOGO = [702, 185];
 const TITLE_BANNERS = [1948, 700];
-const RULE_BANNERS = [2318, 1117];
-const LAST_BANNERS = [3974, 1622];
-const NOT_REGISTERED_BANNERS = [2986, 1104];
+const RULE_BANNERS = [4348, 1274];
+const LAST_BANNERS = [3102, 337];
+const NOT_REGISTERED_BANNERS = [4348, 658];
 const BUTTON = [327, 80];
 const LARGE_BUTTON = [392, 104];
 const CUP = [911, 1096];
@@ -63,7 +66,7 @@ const FLOWERS = [
 const SIZES = new Map<string, GameConfig>();
 
 SIZES.set('<=320', {
-  logoWidth: 100,
+  logoWidth: 80,
   nameLogoHeight: 40,
   font: {
     family: 'TikTokDisplayFont',
@@ -72,15 +75,17 @@ SIZES.set('<=320', {
     style: 'normal',
   },
   titleBannerHeight: 110,
-  otherBanner: 120,
-  ruleBannerHeight: 140,
+  cloudHeight: 40,
+  otherBanner: 30,
+  eventTimeHeight: 20,
+  ruleBannerWidth: 300,
   resultStickWidth: 70,
   buttonHeight: 24,
   phoneWidth: 100,
   giftBoxWidth: 100,
   giftWidth: 100,
   pathY: 100,
-  stuffWidths: [50, 50, 50, 40, 40, 40, 40, 50, 40],
+  stuffWidths: [80, 80],
   fireworks: [30, 60, 90],
   flowers: [
     {
@@ -111,8 +116,8 @@ SIZES.set('<=320', {
 });
 
 SIZES.set('<=375', {
-  logoWidth: 200,
-  nameLogoHeight: 60,
+  logoWidth: 80,
+  nameLogoHeight: 40,
   font: {
     family: 'TikTokDisplayFont',
     size: 12,
@@ -120,9 +125,11 @@ SIZES.set('<=375', {
     style: 'normal',
   },
   titleBannerHeight: 120,
-  otherBanner: 130,
-  ruleBannerHeight: 160,
-  stuffWidths: [70, 70, 70, 70, 60, 70, 60, 70, 70],
+  cloudHeight: 40,
+  otherBanner: 40,
+  eventTimeHeight: 20,
+  ruleBannerWidth: 320,
+  stuffWidths: [80, 80],
   fireworks: [30, 60, 90],
   flowers: [
     {
@@ -158,9 +165,9 @@ SIZES.set('<=375', {
   pathY: 50,
 });
 
-SIZES.set('<=525', {
-  logoWidth: 200,
-  nameLogoHeight: 60,
+SIZES.set('<=425', {
+  logoWidth: 100,
+  nameLogoHeight: 50,
   font: {
     family: 'TikTokDisplayFont',
     size: 16,
@@ -168,10 +175,12 @@ SIZES.set('<=525', {
     style: 'normal',
   },
   giftWidth: 120,
+  cloudHeight: 60,
   titleBannerHeight: 120,
-  otherBanner: 150,
-  ruleBannerHeight: 180,
-  stuffWidths: [100, 100, 100, 100, 60, 100, 60, 100, 100],
+  otherBanner: 50,
+  eventTimeHeight: 30,
+  ruleBannerWidth: 375,
+  stuffWidths: [100, 100],
   fireworks: [30, 60, 90],
   flowers: [
     {
@@ -206,8 +215,58 @@ SIZES.set('<=525', {
   pathY: 50,
 });
 
-SIZES.set('<=768', {
-  logoWidth: 200,
+SIZES.set('<=525', {
+  logoWidth: 100,
+  nameLogoHeight: 50,
+  font: {
+    family: 'TikTokDisplayFont',
+    size: 16,
+    lineHeight: 20,
+    style: 'normal',
+  },
+  giftWidth: 120,
+  cloudHeight: 60,
+  titleBannerHeight: 120,
+  otherBanner: 50,
+  eventTimeHeight: 30,
+  ruleBannerWidth: 425,
+  stuffWidths: [100, 100],
+  fireworks: [30, 60, 90],
+  flowers: [
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 75,
+      y: window.innerHeight - 155,
+      w: 25,
+      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+  ],
+  resultStickWidth: 90,
+  buttonHeight: 32,
+  phoneWidth: 120,
+  giftBoxWidth: 120,
+  pathY: 50,
+});
+
+SIZES.set('<=645', {
+  logoWidth: 100,
   nameLogoHeight: 60,
   font: {
     family: 'TikTokDisplayFont',
@@ -216,10 +275,12 @@ SIZES.set('<=768', {
     style: 'normal',
   },
   giftWidth: 160,
+  cloudHeight: 80,
   titleBannerHeight: 160,
-  otherBanner: 200,
-  ruleBannerHeight: 240,
-  stuffWidths: [120, 120, 120, 100, 70, 100, 70, 120, 100],
+  otherBanner: 60,
+  eventTimeHeight: 40,
+  ruleBannerWidth: 525,
+  stuffWidths: [180, 180],
   fireworks: [30, 60, 90],
   flowers: [
     {
@@ -249,13 +310,113 @@ SIZES.set('<=768', {
   ],
   resultStickWidth: 100,
   buttonHeight: 32,
-  phoneWidth: 200,
+  phoneWidth: 120,
+  giftBoxWidth: 300,
+  pathY: 100,
+});
+
+SIZES.set('<=768', {
+  logoWidth: 100,
+  nameLogoHeight: 60,
+  font: {
+    family: 'TikTokDisplayFont',
+    size: 16,
+    lineHeight: 20,
+    style: 'normal',
+  },
+  giftWidth: 160,
+  cloudHeight: 80,
+  titleBannerHeight: 160,
+  otherBanner: 60,
+  eventTimeHeight: 40,
+  ruleBannerWidth: 645,
+  stuffWidths: [180, 180],
+  fireworks: [30, 60, 90],
+  flowers: [
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 75,
+      y: window.innerHeight - 155,
+      w: 25,
+      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+  ],
+  resultStickWidth: 100,
+  buttonHeight: 32,
+  phoneWidth: 120,
+  giftBoxWidth: 300,
+  pathY: 100,
+});
+
+SIZES.set('<=1024', {
+  logoWidth: 100,
+  nameLogoHeight: 60,
+  font: {
+    family: 'TikTokDisplayFont',
+    size: 16,
+    lineHeight: 20,
+    style: 'normal',
+  },
+  giftWidth: 160,
+  cloudHeight: 80,
+  titleBannerHeight: 160,
+  otherBanner: 60,
+  eventTimeHeight: 40,
+  ruleBannerWidth: 800,
+  stuffWidths: [180, 180],
+  fireworks: [30, 60, 90],
+  flowers: [
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 75,
+      y: window.innerHeight - 155,
+      w: 25,
+      h: (FLOWERS[1][1] * 25) / FLOWERS[1][0],
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+    {
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+    },
+  ],
+  resultStickWidth: 100,
+  buttonHeight: 32,
+  phoneWidth: 120,
   giftBoxWidth: 300,
   pathY: 100,
 });
 
 SIZES.set('<=1366', {
-  logoWidth: 200,
+  logoWidth: 100,
   nameLogoHeight: 60,
   font: {
     family: 'TikTokDisplayFont',
@@ -264,9 +425,11 @@ SIZES.set('<=1366', {
     style: 'normal',
   },
   titleBannerHeight: 160,
-  otherBanner: 200,
-  ruleBannerHeight: 240,
-  stuffWidths: [180, 180, 180, 120, 90, 120, 90, 180, 120],
+  cloudHeight: 100,
+  otherBanner: 100,
+  eventTimeHeight: 50,
+  ruleBannerWidth: 800,
+  stuffWidths: [180, 180],
   fireworks: [50, 100, 140],
   flowers: [],
   giftWidth: 240,
@@ -278,7 +441,7 @@ SIZES.set('<=1366', {
 });
 
 SIZES.set('<=1440', {
-  logoWidth: 200,
+  logoWidth: 100,
   nameLogoHeight: 60,
   font: {
     family: 'TikTokDisplayFont',
@@ -287,10 +450,12 @@ SIZES.set('<=1440', {
     style: 'normal',
   },
   giftWidth: 300,
+  cloudHeight: 100,
   titleBannerHeight: 160,
-  otherBanner: 200,
-  ruleBannerHeight: 240,
-  stuffWidths: [200, 200, 200, 140, 90, 140, 90, 200, 140],
+  otherBanner: 100,
+  eventTimeHeight: 60,
+  ruleBannerWidth: 800,
+  stuffWidths: [200, 200],
   fireworks: [50, 100, 140],
   flowers: [],
   resultStickWidth: 110,
@@ -301,7 +466,7 @@ SIZES.set('<=1440', {
 });
 
 SIZES.set('<=1720', {
-  logoWidth: 200,
+  logoWidth: 100,
   nameLogoHeight: 60,
   font: {
     family: 'TikTokDisplayFont',
@@ -310,10 +475,12 @@ SIZES.set('<=1720', {
     style: 'normal',
   },
   giftWidth: 300,
+  cloudHeight: 100,
   titleBannerHeight: 160,
-  otherBanner: 200,
-  ruleBannerHeight: 240,
-  stuffWidths: [260, 260, 260, 160, 100, 160, 100, 260, 160],
+  otherBanner: 100,
+  eventTimeHeight: 60,
+  ruleBannerWidth: 800,
+  stuffWidths: [260, 260],
   fireworks: [50, 100, 140],
   flowers: [],
   resultStickWidth: 110,
@@ -324,7 +491,7 @@ SIZES.set('<=1720', {
 });
 
 SIZES.set('>1720', {
-  logoWidth: 200,
+  logoWidth: 100,
   nameLogoHeight: 60,
   font: {
     family: 'TikTokDisplayFont',
@@ -332,12 +499,14 @@ SIZES.set('>1720', {
     lineHeight: 24,
     style: 'normal',
   },
-  giftWidth: 300,
+  giftWidth: 250,
+  cloudHeight: 100,
   titleBannerHeight: 160,
-  otherBanner: 200,
-  ruleBannerHeight: 280,
-  stuffWidths: [300, 300, 300, 160, 100, 160, 100, 300, 160],
-  fireworks: [50, 100, 140],
+  otherBanner: 100,
+  eventTimeHeight: 60,
+  ruleBannerWidth: 800,
+  stuffWidths: [300, 300],
+  fireworks: [70, 120, 200],
   flowers: [],
   resultStickWidth: 110,
   buttonHeight: 48,
@@ -359,7 +528,7 @@ function getGameConfig(): GameConfig {
   return SIZES.get('<=1366') as GameConfig;
 }
 
-function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: () => void }) {
+function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean, onShakeEnd: () => void }) {
   const gameData = useContext(GameContext);
   const dispatch = useContext(GameDispatchContext);
   const screen = gameData.screen;
@@ -373,8 +542,10 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
   const upperHeight = (width * 104) / 909;
   const layout = gameData.layout as Layout;
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(layout, gameData.screen);
-  const pathY = pathHeight - rawPathHeight;
+  // const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(layout, gameData.screen);
+  // const pathY = pathHeight - rawPathHeight;
+
+  const buttonY = screen.height / 2;
 
   const cupLowerHeight = (width * CUP_LOWER[1]) / CUP_LOWER[0];
   const height = (width * CUP[1]) / CUP[0];
@@ -384,8 +555,8 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
 
   const x = screen.width / 2 - width / 2;
 
-  const frontY = screen.height - height - rawPathHeight / 4 + pathY / 4 + cupLowerHeight;
-  const stickY = screen.height - height - stickHeight / 3 - rawPathHeight / 4 + pathY / 4;
+  const frontY = buttonY + cupLowerHeight;
+  const stickY = buttonY - stickHeight * 1 / 5;
   const topY = frontY - upperHeight / 2;
 
   const [config, setConfig] = useState({
@@ -399,6 +570,14 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
     shakeCount: 0,
     maxShake: 40,
   });
+
+  useEffect(() => {
+    setConfig({
+      ...config,
+      x: x,
+      y: frontY
+    })
+  }, [x, frontY]);
 
   const update = () => {
     const currentConfig = { ...config };
@@ -428,7 +607,9 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
       } as any) : updateUser({
         email: gameData.userInfo.email,
         isPlayed: true
-      } as any)
+      } as any);
+
+      // const executor = Promise.all([])
 
       executor.then(() => {
         currentConfig.shakeCount = 0;
@@ -476,10 +657,16 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
       const result = [...gameData.result];
       const current = gameData.current;
       const playCount = gameData.playCount;
+      // dispatch({
+      //   ...gameData,
+      //   type: 'UPDATE',
+      //   result: [12],
+      //   current: 1,
+      // });
       if (current < playCount) {
         result[current] = getWishingResult();
         if (GIFT_IN_LIST.includes(result[current])) {
-          getGift().then(async(giftId) => {
+          getGift().then(async (giftId) => {
             if (giftId) {
               gameData.userInfo = {
                 ...gameData.userInfo,
@@ -517,6 +704,17 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
       }
     }
   }, [shaking]);
+
+  const stuffWidths = gameData.stuffWidths;
+  const stuffConfigs: StuffConfig[] = [
+    { x: screen.width / 2 - width / 2 - stuffWidths[0] + stuffWidths[0] / 10, y: frontY + height - cupLowerHeight * 3 / 2, w: stuffWidths[0], h: (stuffWidths[0] * STUFFS[0][1]) / STUFFS[0][0] },
+    {
+      x: screen.width / 2 + width / 2 - stuffWidths[1] / 10,
+      y: frontY + height - cupLowerHeight * 3 / 2,
+      w: stuffWidths[1],
+      h: (stuffWidths[1] * STUFFS[1][1]) / STUFFS[1][0],
+    }
+  ];
 
   return (
     <>
@@ -599,6 +797,22 @@ function Cup({ shakable = false, onShakeEnd }: { shakable?: boolean,onShakeEnd: 
         />
         <Image image={imageFront} x={config.x} y={frontY} width={width} height={height} />
       </Layer>
+      <Layer imageSmoothingEnabled>
+        <Stuff
+          src="/assets/materials/stuffs-1.png"
+          x={stuffConfigs[0].x}
+          y={stuffConfigs[0].y}
+          width={stuffConfigs[0].w}
+          height={stuffConfigs[0].h}
+        />
+        <Stuff
+          src="/assets/materials/stuffs-2.png"
+          x={stuffConfigs[1].x}
+          y={stuffConfigs[1].y}
+          width={stuffConfigs[1].w}
+          height={stuffConfigs[1].h}
+        />
+      </Layer>
     </>
   );
 }
@@ -618,8 +832,47 @@ function Firework({
 }) {
   const [image] = useImage(src);
 
-  return <Image image={image} x={x} y={y} width={width} height={height} />;
+  const [config, setConfig] = useState({
+    innerRadius: 0,
+    end: false,
+    outerRadius: width / 2 + 2,
+    maxRadius: width / 2 + 2,
+    step: (width / 2 + 2) / 30
+  });
+
+
+  const update = () => {
+    if(config.innerRadius < config.maxRadius) {
+      config.innerRadius += config.step;
+    }
+    else {
+      config.innerRadius = 0;
+      config.outerRadius = 0;
+    }
+
+    if(config.innerRadius === 0 && config.end && config.outerRadius === 0) {
+      config.innerRadius = 0;
+      config.end = false;
+      config.outerRadius = width / 2 + 2
+    }
+
+    if(config.innerRadius === 0 && config.outerRadius === 0) config.end = true;
+
+    setConfig({...config})
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.requestAnimationFrame(update);
+    }, 1000 / 244);
+  }, [config]);
+
+  return <>
+    <Image image={image} x={x} y={y} width={width} height={height} />
+    <Ring x={x + width / 2} y={y + height / 2} innerRadius={config.innerRadius} outerRadius={config.outerRadius} fill={"#000000"} />
+  </>;
 }
+
 function Stuff({
   src,
   width,
@@ -635,24 +888,11 @@ function Stuff({
   y: number;
   rotation?: number;
 }) {
-  const gameData = useContext(GameContext);
-  const screen = gameData.screen;
   const [image] = useImage(src);
 
-  const {
-    height: pathHeight,
-    width: pathWidth,
-    rawHeight: rawPathHeight,
-  } = getPathSize(gameData.layout as Layout, gameData.screen);
-  const pathX = (screen.width - pathWidth) / 2;
-  const pathY = screen.height - rawPathHeight / 4 - pathHeight / 4 - height / 3;
-
-  const _x = pathX + x;
-  const _y = pathY + y;
-
   const [config, setConfig] = useState({
-    x: _x,
-    y: _y,
+    x: x,
+    y: y,
     w: width,
     h: height,
     step: 0.35,
@@ -662,8 +902,8 @@ function Stuff({
   });
 
   useEffect(() => {
-    setConfig({ ...config, x: _x, y: _y, w: width, h: height });
-  }, [_x, _y, width, height]);
+    setConfig({ ...config, x: x, y: y, w: width, h: height });
+  }, [x, y, width, height]);
 
   // const update = () => {
   //   const currentConfig = { ...config };
@@ -699,6 +939,94 @@ function Stuff({
       width={config.w}
       height={config.h}
       rotation={rotation}
+    />
+  );
+}
+
+function Cloud({
+  src,
+  // width,
+  height,
+  // x,
+  y,
+  direction = "left",
+  delay
+}: {
+  src: string;
+  // width: number;
+  height: number;
+  // x: number;
+  y: number;
+  direction?: "left" | "right";
+  delay: number;
+}) {
+  const [image] = useImage(src);
+
+  const gameData = useContext(GameContext);
+  const width = height * CLOUDS[0] / CLOUDS[1];
+  const screen = gameData.screen;
+
+  const [config, setConfig] = useState({
+    x: direction === "left" ? -width : screen.width,
+    y: y,
+    w: width,
+    h: height,
+    stepX: 3,
+    stepY: 0.5,
+    minY: y,
+    maxY: y + 10,
+    minX: -width,
+    maxX: screen.width,
+    directionX: direction,
+    directionY: "up"
+  });
+
+  useEffect(() => {
+    setConfig({ ...config, y: y, w: width, h: height });
+  }, [y, width, height]);
+
+  const update = () => {
+    const currentConfig = { ...config };
+    if (currentConfig.directionX === "left") {
+      if (currentConfig.x > currentConfig.maxX) currentConfig.x = currentConfig.minX;
+      else currentConfig.x += currentConfig.stepX;
+    }
+    else {
+      if (currentConfig.x < currentConfig.minX) currentConfig.x = currentConfig.maxX;
+      currentConfig.x -= currentConfig.stepX;
+    }
+
+    if (currentConfig.directionY == "up") {
+      currentConfig.y += currentConfig.stepY;
+      if (currentConfig.y > currentConfig.maxY) {
+        currentConfig.directionY = "down";
+        currentConfig.y = currentConfig.maxY - currentConfig.stepY;
+      }
+    }
+    else {
+      currentConfig.y -= currentConfig.stepY;
+      if (currentConfig.y < currentConfig.minY) {
+        currentConfig.directionY = "up";
+        currentConfig.y = currentConfig.minY + currentConfig.stepY;
+      }
+    }
+
+    setConfig(currentConfig);
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.requestAnimationFrame(update);
+    }, 1000 / (50 - delay));
+  }, [config]);
+
+  return (
+    <Image
+      image={image}
+      x={config.x}
+      y={config.y}
+      width={config.w}
+      height={config.h}
     />
   );
 }
@@ -771,19 +1099,17 @@ function TitleBanner() {
   const width = (height * TITLE_BANNERS[0]) / TITLE_BANNERS[1];
   const [image] = useImage('/assets/materials/title.png');
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
-    gameData.layout as Layout,
-    gameData.screen
-  );
-  const { height: phoneHeight } = getPhoneSize(gameData);
+  // const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
+  //   gameData.layout as Layout,
+  //   gameData.screen
+  // );
+  // const { height: phoneHeight } = getPhoneSize(gameData);
 
-  const pathY = pathHeight - rawPathHeight;
+  // const pathY = pathHeight - rawPathHeight;
 
   const x = screen.width / 2 - width / 2;
-  const y =
-    screen.height -
-    (rawPathHeight / 4 + phoneHeight + gameData.buttonHeight + 40 + height) +
-    pathY / 4;
+  const buttonY = screen.height * 1 / 3;
+  const y = buttonY - gameData.buttonHeight / 2 - height;
 
   return <Image image={image} x={x} y={y} width={width} height={height} />;
 }
@@ -791,32 +1117,45 @@ function TitleBanner() {
 function RuleBanner({ onBack }: { onBack: () => void }) {
   // const ratio = 3479 / 1459;
   const gameData = useContext(GameContext);
-  const height = gameData.ruleBannerHeight;
-  const width = (height * RULE_BANNERS[0]) / RULE_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/rule-banner.mobile.png');
+  const width = gameData.ruleBannerWidth;
+  const height = (width * RULE_BANNERS[1]) / RULE_BANNERS[0];
+  const [image] = useImage('/assets/materials/bi-kip-xin-que-banner.png');
   const screen = gameData.screen;
   const buttonHeight = gameData.buttonHeight;
   const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
-    gameData.layout as Layout,
-    gameData.screen
-  );
-  const { height: phoneHeight } = getPhoneSize(gameData);
-
-  const pathY = pathHeight - rawPathHeight;
-
   const x = screen.width / 2 - width / 2;
   const buttonX = screen.width / 2 - buttonWidth / 2;
-  const y = screen.height - (rawPathHeight / 4 + phoneHeight + height) + pathY / 4;
+  const y = screen.height / 2 - height / 2;
+
+  const [opacity, setOpacity] = useState(0);
+
+  const update = () => {
+    if(opacity < 1) setOpacity(opacity + 0.05);
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.requestAnimationFrame(update);
+    }, 1000 / 60);
+  }, [opacity]);
 
   return (
     <>
-      <Image image={image} x={x} y={y} width={width} height={height} />
+      <Rect
+        fill="#000000"
+        opacity={0.8}
+        x={0}
+        y={0}
+        width={screen.width}
+        height={screen.height}
+      />
+      <Image opacity={opacity} image={image} x={x} y={y} width={width} height={height} />
       <Button
+        opacity={opacity}
         src={'/assets/tiktok-game/back-button.desk.png'}
         x={buttonX}
-        y={y + height - buttonHeight}
+        y={y + height + buttonHeight}
         w={buttonWidth}
         h={buttonHeight}
         onClick={onBack}
@@ -830,30 +1169,44 @@ function RemindBanner({ onBack }: { onBack: () => void }) {
   const gameData = useContext(GameContext);
   const height = gameData.otherBanner;
   const width = (height * NOT_REGISTERED_BANNERS[0]) / NOT_REGISTERED_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/not-registered-banner.desk.png');
+  const [image] = useImage('/assets/materials/dang-ky-banner.png');
   const screen = gameData.screen;
   const buttonHeight = gameData.buttonHeight;
   const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
-    gameData.layout as Layout,
-    gameData.screen
-  );
-  const { height: phoneHeight } = getPhoneSize(gameData);
-
-  const pathY = pathHeight - rawPathHeight;
 
   const x = screen.width / 2 - width / 2;
   const buttonX = screen.width / 2 - buttonWidth / 2;
-  const y = screen.height - (rawPathHeight / 4 + phoneHeight + height) + pathY / 4;
+  const y = screen.height / 2 - height;
+
+  const [opacity, setOpacity] = useState(0);
+
+  const update = () => {
+    if(opacity < 1) setOpacity(opacity + 0.05);
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      window.requestAnimationFrame(update);
+    }, 1000 / 60);
+  }, [opacity]);
 
   return (
     <>
-      <Image image={image} x={x} y={y} width={width} height={height} />
+      <Rect
+        fill="#000000"
+        opacity={0.8}
+        x={0}
+        y={0}
+        width={screen.width}
+        height={screen.height}
+      />
+      <Image opacity={opacity} image={image} x={x} y={y} width={width} height={height} />
       <Button
+        opacity={opacity}
         src={'/assets/tiktok-game/back-button.desk.png'}
         x={buttonX}
-        y={y + height - buttonHeight}
+        y={y + height + buttonHeight}
         w={buttonWidth}
         h={buttonHeight}
         onClick={onBack}
@@ -862,27 +1215,37 @@ function RemindBanner({ onBack }: { onBack: () => void }) {
   );
 }
 
-function LastBanner({}) {
+function LastBanner({ }) {
   const gameData = useContext(GameContext);
+
   const height = gameData.otherBanner;
   const width = (height * LAST_BANNERS[0]) / LAST_BANNERS[1];
-  const [image] = useImage('/assets/tiktok-game/last-banner.desk.png');
+  
+  const [image] = useImage('/assets/materials/game-description.png');
+  
+  const eventHeight = gameData.eventTimeHeight;
+  const eventWidth = (eventHeight * EVENT_TIME[0] / EVENT_TIME[1]);
+  const [eventImage] = useImage("/assets/materials/event-time.png");
+  
   const screen = gameData.screen;
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
-    gameData.layout as Layout,
-    gameData.screen
-  );
-  const { height: phoneHeight } = getPhoneSize(gameData);
-
-  const pathY = pathHeight - rawPathHeight;
+  const cupWidth = gameData.phoneWidth;
+  const stickWidth = cupWidth / 5;
+  const stickHeight = (stickWidth * 1586) / 215;
+  const eventX = screen.width / 2 - eventWidth / 2;
+  const eventY = screen.height / 2 - eventHeight - stickHeight * 2 / 5 + gameData.buttonHeight - 10;
 
   const x = screen.width / 2 - width / 2;
-  const y = screen.height - (rawPathHeight / 4 + phoneHeight + height) + pathY / 4;
+  const y = eventY - height - gameData.font.size;
+
+  const nameLogoHeight = gameData.nameLogoHeight;
 
   return (
     <>
+      <TiktokLogo y={y - nameLogoHeight - gameData.font.size * 3 / 2}/>
+      <NameLogo y={y - gameData.font.size}/>
       <Image image={image} x={x} y={y} width={width} height={height} />
+      <Image image={eventImage} x={eventX} y={eventY} width={eventWidth} height={eventHeight}/>
     </>
   );
 }
@@ -893,17 +1256,18 @@ function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: (
   const current = gameData.current - 1 === -1 ? gameData.current : gameData.current - 1;
   // const playCount = gameData.playCount;
 
-  const dataResult = LIST_RESULT[result[current]];
+  const dataResult = LIST_RESULT[result[current]] || LIST_RESULT[getWishingResult(0, 9)];
   const isSpecial = dataResult.type === 'gift';
 
   const [image] = useImage(dataResult.image);
   const [buttonImage] = useImage(
     isSpecial
-      ? '/assets/tiktok-game/tha-nhe-thong-tin.desk.png'
+      ? '/assets/materials/tha-nhe-thong-tin.png'
       : '/assets/tiktok-game/back-button.desk.png'
   );
   const [show, showResult] = useState(false);
   const [display, displayResult] = useState(false);
+  const [showingGuide, showGuide] = useState(true);
   const [showDropInfoButonn, setShowDropInfoButton] = useState(false);
   const width = gameData.resultStickWidth;
   const height = (width * 1762) / 641;
@@ -979,11 +1343,26 @@ function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: (
           width={width}
           height={height}
           rotation={config.rotation}
-          onTap={() => showResult(true)}
+          onTap={() => {
+            showGuide(false);
+            showResult(true)
+          }}
           onClick={() => {
+            showGuide(false);
             showResult(true);
           }}
         />
+      ) : null}
+      {showingGuide ? (
+          <Text
+            text={"Nhấp vào quẻ xăm để xem luận giải"}
+            fill={'#fff'}
+            width={screen.width}
+            align="center"
+            y={config.y + height + fontBase * 4}
+            fontSize={fontBase * 3 / 2}
+            fontFamily="TikTokDisplayFont"
+          />
       ) : null}
       {!isSpecial && display ? (
         <>
@@ -1060,7 +1439,7 @@ function StickResult({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: (
             x={screen.width / 2 - text2Width / 2}
             width={text2Width}
             align="center"
-            y={screen.height / 2 - gameData.giftWidth * 1.5}
+            y={screen.height * 1 / 5}
             lineHeight={1.3125}
             fontSize={fontBase + 4}
             fontFamily="TikTokDisplayFont"
@@ -1093,7 +1472,8 @@ function GiftBox({ onAnimateEnd }: { onAnimateEnd: () => void }) {
   const result = gameData.result;
   const [upperImage] = useImage('/assets/tiktok-game/box-upper.desk.png');
   const [lowerImage] = useImage('/assets/tiktok-game/box-lower.desk.png');
-  const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${result[current] + 1 - 9}.desk.png`);
+  const resultIndex = result[current] + 1 - 9;
+  const [firstGiftImage] = useImage(`/assets/tiktok-game/qua-${resultIndex}.desk.png`);
   const [showGift, setShowGift] = useState(true);
 
   const screen = gameData.screen;
@@ -1110,10 +1490,13 @@ function GiftBox({ onAnimateEnd }: { onAnimateEnd: () => void }) {
   const uy = ly - uheight / 20;
 
   const giftWitdh = gameData.giftWidth;
+  const giftHeight = giftWitdh * GIFTS[resultIndex - 1][1] / GIFTS[resultIndex - 1][0];
 
   const [gift, setGift] = useState({
     width: giftWitdh,
+    height: giftHeight,
     maxWidth: giftWitdh * 2,
+    maxHeight: giftHeight * 2,
     x: screen.width / 2 - giftWitdh / 2,
     y: screen.height / 2 - (2 * giftWitdh) / 3,
   });
@@ -1121,17 +1504,18 @@ function GiftBox({ onAnimateEnd }: { onAnimateEnd: () => void }) {
   const [config, setConfig] = useState({
     x: ux,
     y: uy,
-    r: -17,
+    r: -24,
   });
 
   const update = () => {
     const newConfig = { ...config };
     newConfig.r += 1;
-    newConfig.y -= (giftWitdh * 1.25) / 17;
-    newConfig.x += (giftWitdh * 1.25) / 17;
+    newConfig.y -= (giftWitdh * 0.55) / 24;
+    newConfig.x += (giftWitdh * 1.45) / 24;
     setConfig(newConfig);
     const newGift = { ...gift };
-    newGift.width += newGift.width / 17;
+    newGift.width += newGift.width / 24;
+    newGift.height += newGift.height / 24;
     newGift.x = screen.width / 2 - newGift.width / 2;
     newGift.y = screen.height / 2 - (2 * newGift.width) / 3 + newGift.width / 6;
     setGift(newGift);
@@ -1148,7 +1532,7 @@ function GiftBox({ onAnimateEnd }: { onAnimateEnd: () => void }) {
   return (
     <>
       <Image image={lowerImage} x={lx} y={ly} width={lwidth} height={lheight} />
-      <Image image={firstGiftImage} width={gift.width} height={gift.width} x={gift.x} y={gift.y} />
+      <Image image={firstGiftImage} width={gift.width} height={gift.height} x={gift.x} y={gift.y} />
       <Image
         image={upperImage}
         x={config.x}
@@ -1173,6 +1557,7 @@ function Button({
   y,
   w,
   h,
+  opacity = 1,
   onClick,
 }: {
   src: string;
@@ -1180,11 +1565,12 @@ function Button({
   y: number;
   w: number;
   h: number;
+  opacity?: number;
   onClick: () => void;
 }) {
   const [image] = useImage(src);
   return (
-    <Image onClick={onClick} onTap={onClick} image={image} x={x} y={y} width={w} height={h}></Image>
+    <Image opacity={opacity} onClick={onClick} onTap={onClick} image={image} x={x} y={y} width={w} height={h}></Image>
   );
 }
 
@@ -1193,7 +1579,7 @@ function Result({ onBack, onDropInfo }: { onBack: () => void; onDropInfo: () => 
   const screen = gameData.screen;
   const [config, setConfig] = useState({
     x: 0,
-    w: window.innerWidth,
+    w: screen.width,
     opacity: 0,
   });
 
@@ -1235,16 +1621,16 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
   const buttonHeight = gameData.buttonHeight;
   const buttonWidth = (buttonHeight * BUTTON[0]) / BUTTON[1];
 
-  const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
-    gameData.layout as Layout,
-    gameData.screen
-  );
-  const { height: phoneHeight } = getPhoneSize(gameData);
+  // const { height: pathHeight, rawHeight: rawPathHeight } = getPathSize(
+  //   gameData.layout as Layout,
+  //   gameData.screen
+  // );
+  // const { height: phoneHeight } = getPhoneSize(gameData);
 
-  const pathY = pathHeight - rawPathHeight;
+  // const pathY = pathHeight - rawPathHeight;
 
   const x = screen.width / 2;
-  const y = screen.height - (rawPathHeight / 4 + phoneHeight + buttonHeight) + pathY / 4;
+  const y = screen.height * 1 / 3;
 
   return (
     <>
@@ -1309,7 +1695,11 @@ function ActionGroup({ isRegistered }: { isRegistered: boolean }) {
   );
 }
 
-function TiktokLogo() {
+function TiktokLogo({
+  y
+} : {
+  y : number
+}) {
   const gameData = useContext(GameContext);
   const [image] = useImage('/assets/tiktok-game/tiktok-logo.desk.png');
   const width = gameData.logoWidth;
@@ -1320,14 +1710,18 @@ function TiktokLogo() {
     <Image
       image={image}
       x={screen.width / 2 - width / 2}
-      y={20}
+      y={y - height}
       width={width}
       height={height}
     ></Image>
   );
 }
 
-function NameLogo() {
+function NameLogo({
+  y
+}: {
+  y: number;
+}) {
   const gameData = useContext(GameContext);
   const [image] = useImage('/assets/tiktok-game/tet-hut.desk.png');
   const height = gameData.nameLogoHeight;
@@ -1338,7 +1732,7 @@ function NameLogo() {
     <Image
       image={image}
       x={screen.width / 2 - width / 2}
-      y={screen.height - height - 10}
+      y={y - height}
       width={width}
       height={height}
     ></Image>
@@ -1398,8 +1792,8 @@ const Provider: FunctionComponent<{
 };
 
 function findGCD(a: number, b: number) {
-  if(a == b) return a;
-  
+  if (a == b) return a;
+
   let greater = a > b ? a : b;
   let lessthan = a > b ? b : a;
 
@@ -1411,22 +1805,20 @@ function findGCD(a: number, b: number) {
   return findGCD(greater, lessthan);
 }
 
-function generateScreenSize(){
+function generateScreenSize() {
 
   const currentWidth = window.innerWidth;
   const currentHeight = window.innerHeight / 2;
-  const isWeird = currentWidth / currentHeight >= 21 / 9;
-  const orientation = window.screen.orientation.type.startsWith('landscape') ? "landscape" : "portrait";
-  const gcd = findGCD(currentWidth, currentHeight);
-  const w = currentWidth / gcd;
-  const h = Math.ceil(9 * w / 16);
-  const screenHeight = (orientation === "landscape" ? (isWeird ? (currentWidth * h / w) : currentWidth * 9 / 16) : currentHeight / 2);
+  // const isWeird = currentWidth / currentHeight >= 21 / 9;
+  // const orientation = window.screen.orientation.type.startsWith('landscape') ? "landscape" : "portrait";
+  // const gcd = findGCD(currentWidth, currentHeight);
+  // const w = currentWidth / gcd;
+  // const h = Math.ceil(9 * w / 16);
 
-  console.log(currentWidth, screenHeight);
 
   return {
     width: currentWidth,
-    height: screenHeight
+    height: currentHeight
   }
 }
 
@@ -1443,7 +1835,6 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
 
   const isLoading = isRegistered && !userInfo;
 
-  const stuffWidths = gameData.stuffWidths;
   const fireworkWidths = gameData.fireworks;
 
   useEffect(() => {
@@ -1486,58 +1877,6 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const pathSize = getPathSize(gameData.layout as Layout, screen);
   const phoneSize = getPhoneSize(gameData);
 
-  const stuffConfigs: StuffConfig[] = [
-    { x: 0, y: 0, w: stuffWidths[0], h: (stuffWidths[0] * STUFFS[0][1]) / STUFFS[0][0] },
-    {
-      x: pathSize.width - stuffWidths[1],
-      y: 0,
-      w: stuffWidths[1],
-      h: (stuffWidths[1] * STUFFS[1][1]) / STUFFS[1][0],
-    },
-    {
-      x: -stuffWidths[2] / 2,
-      y: pathSize.height / 4 + (stuffWidths[2] * STUFFS[2][1]) / STUFFS[2][0] / 2,
-      w: stuffWidths[2],
-      h: (stuffWidths[2] * STUFFS[2][1]) / STUFFS[2][0],
-    },
-    {
-      x: pathSize.width / 2 + pathSize.width / 6 - stuffWidths[3] / 2,
-      y: pathSize.height / 4 + (stuffWidths[3] * STUFFS[3][1]) / STUFFS[3][0] / 2,
-      w: stuffWidths[3],
-      h: (stuffWidths[3] * STUFFS[3][1]) / STUFFS[3][0],
-    },
-    {
-      x: pathSize.width / 2 + pathSize.width / 6 - stuffWidths[4] / 2,
-      y: pathSize.height / 4 - (stuffWidths[4] * STUFFS[4][1]) / STUFFS[4][0],
-      w: stuffWidths[4],
-      h: (stuffWidths[4] * STUFFS[4][1]) / STUFFS[4][0],
-    },
-    {
-      x: pathSize.width - pathSize.width / 4,
-      y: pathSize.height / 4 + (stuffWidths[5] * STUFFS[5][1]) / STUFFS[5][0],
-      w: stuffWidths[5],
-      h: (stuffWidths[5] * STUFFS[5][1]) / STUFFS[5][0],
-    },
-    {
-      x: pathSize.width / 2 - pathSize.width / 6,
-      y: pathSize.height / 4 - (stuffWidths[6] * STUFFS[6][1]) / STUFFS[6][0] / 4,
-      w: stuffWidths[6],
-      h: (stuffWidths[6] * STUFFS[6][1]) / STUFFS[6][0],
-    },
-    {
-      x: pathSize.width - stuffWidths[7] / 2,
-      y: pathSize.height / 3,
-      w: stuffWidths[7],
-      h: (stuffWidths[7] * STUFFS[7][1]) / STUFFS[7][0],
-    },
-    {
-      x: pathSize.width / 5,
-      y: pathSize.height / 4,
-      w: stuffWidths[8],
-      h: (stuffWidths[8] * STUFFS[8][1]) / STUFFS[8][0],
-    },
-  ];
-
   // useEffect(() => {
   //   dispatch({
   //     ...gameData,
@@ -1550,23 +1889,41 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
 
   const fireworks: StuffConfig[] = [
     {
-      x: screen.width / 2 - screen.width / 8 - phoneSize.width / 2,
+      x: screen.width / 2 + phoneSize.width,
       y: screen.height / 2 + screen.height / 16,
       w: fireworkWidths[0],
       h: fireworkWidths[0],
     },
     {
-      x: screen.width / 2 - screen.width / 5 - phoneSize.width / 2,
-      y: screen.height / 2 - screen.height / 16,
+      x: random(screen.width / 2 + screen.width / 4, screen.width - fireworkWidths[1]),
+      y: screen.height / 2 + fireworkWidths[1] / 2,
       w: fireworkWidths[1],
       h: fireworkWidths[1],
     },
     {
-      x: screen.width / 2 + screen.width / 8 + phoneSize.width / 2,
-      y: screen.height / 2 - screen.height / 8,
+      x: random(screen.width / 2 + screen.width / 4, screen.width),
+      y: screen.height * 1 / 4,
       w: fireworkWidths[2],
       h: fireworkWidths[2],
     },
+    {
+      x: random(screen.width / 2 + screen.width / 4 + fireworkWidths[1], screen.width - fireworkWidths[1]),
+      y: screen.height / 1.5 + fireworkWidths[1],
+      w: fireworkWidths[1],
+      h: fireworkWidths[1],
+    },
+    {
+      x: screen.width / 2 - phoneSize.width - fireworkWidths[0],
+      y: screen.height / 2 + screen.height / 16,
+      w: fireworkWidths[0],
+      h: fireworkWidths[0],
+    },
+    {
+      x: random(screen.width / 2 - screen.width / 4 - phoneSize.width, screen.width / 2 - fireworkWidths[1] * 2 - phoneSize.width),
+      y: screen.height / 2 - screen.height / 8,
+      w: fireworkWidths[1],
+      h: fireworkWidths[1],
+    }
   ];
 
   // const position = useRef({
@@ -1581,31 +1938,31 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
   const upperRef = useRef<any>();
 
   const pathY = (pathSize.width - pathSize.rawWidth) / 2;
-  const isWeird = 2 * window.innerWidth / window.innerHeight  >= 21 / 9;
+  const isWeird = 2 * window.innerWidth / window.innerHeight >= 21 / 9;
 
-  console.log(screen);  
+  // console.log(screen);
 
   return (
     <div
       id="game"
       className={`w-full justify-end flex flex-col relative overflow-x-hidden`}
       style={{
-        ...isWeird ? {"height": "fit-content"} : {"height": "50vh"}
+        ...isWeird ? { "height": "fit-content" } : { "height": "50vh" }
       }}
       onTouchStart={() => {
-        if(upperRef.current) {
+        if (upperRef.current) {
           const element = (upperRef.current as HTMLDivElement);
           const current = element.style.pointerEvents;
-          if(!current || current == "none") element.style.pointerEvents = "auto";
+          if (!current || current == "none") element.style.pointerEvents = "auto";
           else element.style.pointerEvents = "none";
         }
-      //   const touch = e.touches[0];
-      //   position.current.startY = window.scrollY;
-      //   position.current.y = touch.clientY;
-      //   position.current.time = performance.now();
-      //   position.current.v = 0;
-      //   position.current.touching = true;
-      //   console.log("start", position);
+        //   const touch = e.touches[0];
+        //   position.current.startY = window.scrollY;
+        //   position.current.y = touch.clientY;
+        //   position.current.time = performance.now();
+        //   position.current.v = 0;
+        //   position.current.touching = true;
+        //   console.log("start", position);
       }}
       onTouchMove={() => {
         // if (!position.current.touching) return;
@@ -1649,12 +2006,57 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
         // requestAnimationFrame(scrollStep);
       }}
     >
-      <div className="absolute w-full h-full z-30 pointer-events-none" ref={upperRef}/>
+      <div className="absolute w-full h-full z-30 pointer-events-none" ref={upperRef} />
       {isLoading ? (
-        <div className="w-dvw h-dvh absolute top-0 left-0 z-30 bg-[#00000050]"></div>
+        <div className="w-dvw h-full absolute top-0 left-0 z-30 bg-[#00000050]"></div>
       ) : null}
       <Stage width={screen.width} height={screen.height}>
         <Layer id="background" imageSmoothingEnabled>
+          <Firework
+            src="/assets/materials/red-firework.png"
+            x={fireworks[0].x}
+            y={fireworks[0].y}
+            width={fireworks[0].w}
+            height={fireworks[0].h}
+          />
+          <Firework
+            src="/assets/materials/yellow-firework.png"
+            x={fireworks[1].x}
+            y={fireworks[1].y}
+            width={fireworks[1].w}
+            height={fireworks[1].h}
+          />
+          <Firework
+            src="/assets/materials/blue-firework.png"
+            x={fireworks[2].x}
+            y={fireworks[2].y}
+            width={fireworks[2].w}
+            height={fireworks[2].h}
+          /> 
+          <Firework
+            src="/assets/materials/red-firework.png"
+            x={fireworks[3].x}
+            y={fireworks[3].y}
+            width={fireworks[3].w}
+            height={fireworks[3].h}
+          />
+          <Firework
+            src="/assets/materials/yellow-firework.png"
+            x={fireworks[4].x}
+            y={fireworks[4].y}
+            width={fireworks[4].w}
+            height={fireworks[4].h}
+          />
+          <Firework
+            src="/assets/materials/blue-firework.png"
+            x={fireworks[5].x}
+            y={fireworks[5].y}
+            width={fireworks[5].w}
+            height={fireworks[5].h}
+          /> 
+          <Cloud y={screen.height * 1 / 4} src="/assets/materials/cloud-1.png" height={gameData.cloudHeight} direction="right" delay={5} />
+          <Cloud y={screen.height * 1 / 3} src="/assets/materials/cloud-2.png" height={gameData.cloudHeight * 1.2} direction="left" delay={10} />
+          <Cloud y={screen.height * 3 / 5} src="/assets/materials/cloud-1.png" height={gameData.cloudHeight * 1.4} direction="right" delay={15} />
           {/* {currentStep === 0 || currentStep === 1 || currentStep === 3 || currentStep === 4 ? (
             <Phone />
           ) : null}
@@ -1723,32 +2125,19 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
             width={stuffConfigs[8].w}
             height={stuffConfigs[8].h}
           />
-          <Firework
-            src="/assets/tiktok-game/red-firework.desk.png"
-            x={fireworks[0].x}
-            y={fireworks[0].y}
-            width={fireworks[0].w}
-            height={fireworks[0].h}
-          />
-          <Firework
-            src="/assets/tiktok-game/yellow-firework.desk.png"
-            x={fireworks[1].x}
-            y={fireworks[1].y}
-            width={fireworks[1].w}
-            height={fireworks[1].h}
-          />
-          <Firework
-            src="/assets/tiktok-game/blue-firework.desk.png"
-            x={fireworks[2].x}
-            y={fireworks[2].y}
-            width={fireworks[2].w}
-            height={fireworks[2].h}
-          /> */}
+        */}
         </Layer>
+        <Cup
+          shakable={currentStep === 2}
+          onShakeEnd={() => {
+            setShowResut(true);
+          }}
+        />
         <Layer imageSmoothingEnabled>
-          {/* <TiktokLogo /> */}
           {currentStep === 3 ? <LastBanner /> : null}
-          {currentStep === 0 || currentStep == 2 ? <TitleBanner /> : null}
+          {currentStep !== 3 ? <TitleBanner /> : null}
+
+          {currentStep != 2 && currentStep != 3 && currentStep != 5 ? <ActionGroup isRegistered={isRegistered} /> : null}
           {currentStep === 1 ? (
             <RuleBanner
               onBack={() => {
@@ -1771,16 +2160,8 @@ function GameInner({ isRegistered, userData }: { isRegistered: boolean; userData
               }}
             />
           ) : null}
-          {currentStep === 0 ? <ActionGroup isRegistered={isRegistered} /> : null}
-          {/* <NameLogo /> */}
           {/* <Mask /> */}
         </Layer>
-        <Cup
-          shakable={currentStep === 2}
-          onShakeEnd={() => {
-            setShowResut(true);
-          }}
-        />
       </Stage>
       {showResult && !showDropInfo ? (
         <div className="absolute top-0 left-0 w-full h-full z-10">
@@ -1830,8 +2211,8 @@ function Game() {
         }}
         onClickScrollToGame={() => {
           const gameAnchor = document.querySelector("#game");
-          if(gameAnchor) {
-            gameAnchor.scrollIntoView({"behavior": "smooth"})
+          if (gameAnchor) {
+            gameAnchor.scrollIntoView({ "behavior": "smooth" })
           }
         }}
       />

@@ -133,7 +133,7 @@ const NewRegisterForm = ({
               <div className="w-full">
                 <input
                   placeholder="Họ *"
-                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[57px]"
                   onChange={e => setForm({ ...form, firstName: e.target.value })}
                 />
                 <p className="text-white text-xs ms-5 h-4 mt-1">{errors.firstName}</p>
@@ -141,7 +141,7 @@ const NewRegisterForm = ({
               <div className="w-full">
                 <input
                   placeholder="Tên *"
-                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[57px]"
                   onChange={e => setForm({ ...form, lastName: e.target.value })}
                 />
                 <p className="text-white text-xs ms-5 h-4 mt-1">{errors.lastName}</p>
@@ -150,7 +150,7 @@ const NewRegisterForm = ({
                 <input
                   type="email"
                   placeholder="Địa chỉ email *"
-                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[57px]"
                   onChange={e => setForm({ ...form, email: e.target.value })}
                 />
                 <p className="text-white text-xs ms-5 h-4 mt-1">{errors.email}</p>
@@ -158,7 +158,7 @@ const NewRegisterForm = ({
               <div className="w-full">
                 <input
                   placeholder="Đơn vị công tác *"
-                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[70px]"
+                  className="p-2 md:p-4 w-full rounded-lg placeholder:text-black outline-none h-[57px]"
                   onChange={e => setForm({ ...form, company: e.target.value })}
                 />
                 <p className="text-white text-xs ms-5 h-4 mt-1">{errors.company}</p>

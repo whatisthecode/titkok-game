@@ -38,7 +38,8 @@ export interface GameConfig {
   font: GameFontConfig;
   titleBannerHeight: number;
   otherBanner: number;
-  ruleBannerHeight: number;
+  ruleBannerWidth: number;
+  eventTimeHeight: number;
   stuffWidths: number[];
   fireworks: number[];
   flowers: StuffConfig[];
@@ -46,6 +47,7 @@ export interface GameConfig {
   buttonHeight: number;
   phoneWidth: number;
   giftBoxWidth: number;
+  cloudHeight: number;
   giftWidth: number;
   pathY: number;
 }
