@@ -864,7 +864,7 @@ function Firework({
   useEffect(() => {
     setTimeout(() => {
       window.requestAnimationFrame(update);
-    }, 1000 / 244);
+    }, 1000 / (244 - random(0, 100)));
   }, [config]);
 
   return <>

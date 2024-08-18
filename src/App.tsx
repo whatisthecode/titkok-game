@@ -7,6 +7,7 @@ import { IUser } from './types/type';
 // import NewRegisterForm from './modules/NewRegister';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Test from './modules/Test';
+import Welcome from './modules/Welcome';
 
 const App = () => {
   const [userData, setUserData] = useState<IUser | null>(null);
@@ -31,6 +32,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Game />} />
           <Route path="just-a-test" element={<Test />} />
+          <Route path="welcome" element={<Welcome />} />
           {/* New route */}
           {/* <Route path="/form" element={<NewRegisterForm />} /> */}
         </Routes>
